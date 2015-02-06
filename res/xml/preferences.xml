@@ -1,0 +1,38 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="User Preferences" >
+        <EditTextPreference
+            android:dialogTitle="Username"
+            android:key="username"
+            android:password="false"
+            android:summary="Bob"
+            android:title="Username" >
+            <intent android:action="your.package.path.to.Activity" />
+        </EditTextPreference>
+        <EditTextPreference
+            android:dialogTitle="User Password"
+            android:key="user_password"
+            android:password="true"
+            android:summary="******"
+            android:title="Password" >
+        </EditTextPreference>
+
+        <ListPreference
+            android:entries="@array/category"
+            android:entryValues="@array/category_values"
+            android:key="category"
+            android:title="Category" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Legal" >
+        <Preference android:title="Terms of Service" >
+            <intent android:action="your.package.path.to.Activity" />
+        </Preference>
+        <Preference android:title="Privacy Policy" >
+            <intent android:action="your.package.path.to.Activity" />
+        </Preference>
+        <Preference android:title="Content Guidelines" >
+            <intent android:action="your.package.path.to.Activity" />
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

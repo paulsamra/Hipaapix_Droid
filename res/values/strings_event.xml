@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="view_event_response_label">Attending?</string>
+
+<string name="hint_description">"Description"</string>
+<string name="reminders_label">Add reminder</string>
+<string name="response_no">No</string>
+<string name="response_yes">Yes</string>
+<string name="response_maybe">Maybe</string>
+<string name="view_event_organizer_label">Organizer:</string>
+<string name="attendees_label">Guests</string>
+<string name="hint_attendees">"Guests"</string>
+<string name="repeats_label">Repetition</string>
+<string name="accessibility_pick_recurrence">Repeat event</string>
+<string name="does_not_repeat">One-time event</string>
+<string name="event_info_reminders_label">Reminders</string>
+<string name="accessibility_reminder_showmeas">Show me as</string>
+<string name="accessibility_add_reminder">Add reminder</string>
+<string name="event_info_reminders_label">Reminders</string>
+<string name="accessibility_reminder_privacy">Privacy</string>
+</resources>

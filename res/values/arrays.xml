@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+    <string-array name="home_icon_labels">
+        <item>Take Photo</item>
+        <item>Retrieve Photo</item>
+    </string-array>
+    -->
+    <string-array name="home_icon_labels">
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <array name="home_icon_icons">
+        <item>@drawable/button_take_photo</item>
+        <item>@drawable/button_retrieve_photo</item>
+    </array>
+
+    <string-array name="category">
+        <item>Otology</item>
+        <item>Endoscopic Sinus</item>
+        <item>Head and Neck</item>
+        <item>Laryngology</item>
+        <item>Plastics</item>
+        <item>Imaging</item>
+    </string-array>
+    <string-array name="category_values">
+        <item>Otology</item>
+        <item>Endoscopic Sinus</item>
+        <item>Head and Neck</item>
+        <item>Laryngology</item>
+        <item>Plastics</item>
+        <item>Imaging</item>
+    </string-array>
+
+</resources>

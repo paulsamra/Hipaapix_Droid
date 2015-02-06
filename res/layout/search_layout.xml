@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:shrinkColumns="0"
+    android:stretchColumns="1" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4sp" />
+
+    <TableRow>
+
+        <TextView
+            style="@style/formFieldLabel"
+            android:text="@string/first_name" />
+
+        <EditText
+            android:id="@+id/first_name_field"
+            style="@style/formField.text" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/formFieldLabel"
+            android:text="@string/last_name" />
+
+        <EditText
+            android:id="@+id/last_name_field"
+            style="@style/formField.text" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/formFieldLabel"
+            android:text="@string/birth_date" />
+
+        <EditText
+            android:id="@+id/birth_date_field"
+            style="@style/formField.text" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/formFieldLabel"
+            android:text="@string/new_patient" />
+
+        <Switch
+            android:id="@+id/new_patient_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <View android:layout_height="2dip" />
+
+    <TableRow>
+
+        <Button
+            android:id="@+id/submit"
+            style="@style/formField"
+            android:text="Go" />
+    </TableRow>
+
+    <ExpandableListView
+        android:id="@+id/category_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</TableLayout>

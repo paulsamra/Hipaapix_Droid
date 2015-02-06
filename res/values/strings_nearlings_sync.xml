@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hipaapix_sync_contentAuthority">swipe.android.hipaapix.NearlingsContentProvider</string>
+    <string name="hipaapix_accountType">HippaPixSync</string>
+    <string name="hipaapix_accountName">HippaPixAccount</string>
+</resources>
