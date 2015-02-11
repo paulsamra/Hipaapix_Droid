@@ -6,8 +6,11 @@
 
     <Button
         android:id="@+id/logout"
+        android:background="@android:color/transparent"
+        android:textColor="@color/hipaapix_theme_red"
+        android:typeface="sans"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Logout" />
+        android:text="Log Out" />
 
 </LinearLayout>

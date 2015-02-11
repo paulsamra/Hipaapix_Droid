@@ -37,9 +37,7 @@
             style="@style/formFieldLabel"
             android:text="@string/birth_date" />
 
-        <EditText
-            android:id="@+id/birth_date_field"
-            style="@style/formField.text" />
+        <include layout="@layout/time_layout" />
     </TableRow>
 
     <TableRow>
