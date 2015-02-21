@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
     <LinearLayout
@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
-        android:minHeight="48dip"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -33,7 +32,6 @@
         android:id="@+id/from_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="64dip"
         android:orientation="vertical" >
 
         <TextView
@@ -53,12 +51,17 @@
             <Button
                 android:id="@+id/date"
                 style="@style/TextAppearance.EditEvent_SpinnerButton"
-                android:layout_width="0px"
+                android:background="@color/white"
+                android:text="Select Date"
+                android:textColor="#808080"
+                android:layout_width="0dip"
+                android:textSize="20dip"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
-                android:layout_weight="7"
+                android:layout_weight="1"
                 android:contentDescription="@string/accessibility_pick_start_date"
                 android:paddingRight="4dp"
+                android:layout_marginLeft="5dip"
                 android:singleLine="true" />
 
        <!--      <Button

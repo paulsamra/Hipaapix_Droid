@@ -28,7 +28,7 @@ public abstract class HipaaPixTabsActivityContainer extends
 	  public static final String TAB_A  = "tab_a_identifier";
 	   public static final String TAB_B  = "tab_b_identifier";
 
-	protected PositionalLinkedMap<String, Fragment> mapFragList = new PositionalLinkedMap<String, Fragment>();
+	protected PositionalLinkedMap<String, FragmentInfo> mapFragList = new PositionalLinkedMap<String, FragmentInfo>();
 
 	/* Your Tab host */
 	private TabHost mTabHost;
@@ -38,8 +38,6 @@ public abstract class HipaaPixTabsActivityContainer extends
 
 	/* Save current tabs identifier in this.. */
 	private String mCurrentTab;
-
-	
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,10 +107,10 @@ public abstract class HipaaPixTabsActivityContainer extends
 				 */
 				if (tabId.equals(TAB_A)) {
 					
-					pushFragments(tabId,mapFragList.getValue(0), false,
+					pushFragments(tabId,mapFragList.getValue(0).getFragment(), false,
 							true);
 				} else if (tabId.equals(TAB_B)) {
-					pushFragments(tabId, mapFragList.getValue(1), false,
+					pushFragments(tabId, mapFragList.getValue(1).getFragment(), false,
 							true);
 				}
 			} else {
@@ -227,7 +225,7 @@ public abstract class HipaaPixTabsActivityContainer extends
 		fragmentTransaction = manager.beginTransaction();
 
 		// need current fragment?
-		Fragment fragment = mapFragList.getValue(tab.getPosition());
+		Fragment fragment = mapFragList.getValue(tab.getPosition()).getFragment();
 
 		// fragment = navDrawerSelected.getFragment();
 		// replace the fragment once found

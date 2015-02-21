@@ -2,6 +2,7 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:layout_margin="5dip"
     android:shrinkColumns="0"
     android:stretchColumns="1" >
 
@@ -9,41 +10,74 @@
         android:layout_width="fill_parent"
         android:layout_height="4sp" />
 
-    <TableRow>
+    <TableRow android:layout_margin="4dip" >
 
         <TextView
-            style="@style/formFieldLabel"
-            android:text="@string/first_name" />
-
-        <EditText
-            android:id="@+id/first_name_field"
-            style="@style/formField.text" />
+            style="@style/formFieldLabel.searchFormtitle"
+            android:text="Patient Info"
+            android:textColor="@color/hipaapix_theme_red" />
     </TableRow>
 
-    <TableRow>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#90909090" />
+
+    <TableRow android:layout_margin="4dip" >
 
         <TextView
-            style="@style/formFieldLabel"
+            style="@style/formFieldLabel.searchFormtitle"
+            android:text="@string/first_name" />
+
+         <EditText
+            android:id="@+id/first_name_field"
+            style="@style/searchFormField.text"
+            android:hint="Enter Name" />
+    </TableRow>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#90909090" />
+
+    <TableRow android:layout_margin="4dip" >
+
+        <TextView
+            style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/last_name" />
 
         <EditText
             android:id="@+id/last_name_field"
-            style="@style/formField.text" />
+            style="@style/searchFormField.text"
+            android:hint="Enter Name" />
     </TableRow>
 
-    <TableRow>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#90909090" />
+
+    <TableRow android:layout_margin="4dip" >
 
         <TextView
-            style="@style/formFieldLabel"
+            style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/birth_date" />
 
-        <include layout="@layout/time_layout" />
+          <EditText
+            android:id="@+id/date"
+            style="@style/searchFormField.text"
+            android:hint="Select Date" />
     </TableRow>
 
-    <TableRow>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#90909090" />
+
+    <TableRow android:layout_margin="4dip" >
 
         <TextView
-            style="@style/formFieldLabel"
+            style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/new_patient" />
 
         <Switch
@@ -52,7 +86,10 @@
             android:layout_height="wrap_content" />
     </TableRow>
 
-    <View android:layout_height="2dip" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#90909090" />
 
     <TableRow>
 

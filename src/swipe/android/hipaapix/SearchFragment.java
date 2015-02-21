@@ -10,12 +10,16 @@ import swipe.android.hipaapix.viewAdapters.ExpandableListAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -26,18 +30,19 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 	List<String> listDataHeader;
 	HashMap<String, List<String>> listDataChild;
 	ExpandableListAdapter listAdapter;
-	Button start_date;
+	EditText start_date;
 
 	public static final String DATEPICKER_START_TAG = "datepicker_start";
 	Calendar calendar;
-DatePickerDialog datePickerDialog;
+	DatePickerDialog datePickerDialog;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.search_layout, container, false);
 		go = (Button) view.findViewById(R.id.submit);
 
-		 calendar = Calendar.getInstance();
+		calendar = Calendar.getInstance();
 		go.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -49,17 +54,27 @@ DatePickerDialog datePickerDialog;
 				SearchFragment.this.getActivity().startActivity(i);
 			}
 		});
-		 datePickerDialog = DatePickerDialog.newInstance(
-					this, calendar.get(Calendar.YEAR),
-					calendar.get(Calendar.MONTH),
-					calendar.get(Calendar.DAY_OF_MONTH), false);
+		datePickerDialog = DatePickerDialog.newInstance(this,
+				calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+				calendar.get(Calendar.DAY_OF_MONTH), false);
 
 		// get the listview
 		expListView = (ExpandableListView) view
 				.findViewById(R.id.category_list);
-		TextView from_label = (TextView) view.findViewById(R.id.from_label);
-		from_label.setVisibility(View.GONE);
-		start_date = (Button) view.findViewById(R.id.date);
+		expListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				/*mActivity.pushFragments(AppConstants.TAB_A, new
+					 AppTabASecondFragment(),true,true);*/
+				/*Intent i = new Intent(SearchFragment.this.getActivity(),
+						GridOfSearchResultsNoTakePictureActivity.class);
+				SearchFragment.this.getActivity().startActivity(i);*/
+			}
+
+		});
+		start_date = (EditText) view.findViewById(R.id.date);
 		this.setUpDate(start_date);
 		// preparing list data
 		prepareListData();
@@ -70,33 +85,33 @@ DatePickerDialog datePickerDialog;
 		// setting list adapter
 		expListView.setAdapter(listAdapter);
 		if (savedInstanceState != null) {
-			DatePickerDialog dpd = (DatePickerDialog) SearchFragment.this.getActivity().getSupportFragmentManager()
+			DatePickerDialog dpd = (DatePickerDialog) SearchFragment.this
+					.getActivity().getSupportFragmentManager()
 					.findFragmentByTag(DATEPICKER_START_TAG);
 			if (dpd != null) {
 				dpd.setOnDateSetListener(this);
 			}
-		
+
 		}
 		return view;
 	}
-	protected void setUpDate(Button start_date){
-		if(start_date == null){
+
+	protected void setUpDate(EditText start_date) {
+		if (start_date == null) {
 			return;
 		}
-		start_date.setOnClickListener(new OnClickListener() {
-
+		start_date.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public void onClick(View v) {
+			public boolean onTouch(View v, MotionEvent event) {
 				datePickerDialog.setVibrate(false);
 				datePickerDialog.setYearRange(1985, 2028);
-				datePickerDialog.show(SearchFragment.this.getActivity().getSupportFragmentManager(),
-						DATEPICKER_START_TAG);
+				datePickerDialog.show(SearchFragment.this.getActivity()
+						.getSupportFragmentManager(), DATEPICKER_START_TAG);
+				return false;
 			}
-
 		});
 
 	}
-
 
 	private void prepareListData() {
 		listDataHeader = new ArrayList<String>();
@@ -116,10 +131,11 @@ DatePickerDialog datePickerDialog;
 		listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
 
 	}
+
 	@Override
 	public void onDateSet(DatePickerDialog datePickerDialog, int year,
 			int month, int day) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -19,11 +19,13 @@ public class SearchResultActivity extends ListActivity implements
 		AsyncTaskCompleteListener<PatientsResultsResponse> {
 
 	private SearchResultsAdapter resultsListAdapter;
-@Override
-public void onResume(){
-	super.onResume();
-	new DummyWebTask<Object>(this, Object.class).execute("","","");
-}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		new DummyWebTask<Object>(this, Object.class).execute("", "", "");
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -46,7 +48,6 @@ public void onResume(){
 
 	@Override
 	public void onTaskComplete(PatientsResultsResponse result) {
-		// TODO Auto-generated method stub
 		SearchResultsAdapter adapter = (SearchResultsAdapter) this.resultsListAdapter;
 		adapter.clear();
 		result = new PatientsResultsResponse();
@@ -59,7 +60,7 @@ public void onResume(){
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Intent i = new Intent(this, GridOfImages.class);
+		Intent i = new Intent(this, GridOfSearchResultsWithTakePictureActivity.class);
 		startActivity(i);
 
 	}

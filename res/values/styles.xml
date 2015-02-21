@@ -188,8 +188,8 @@
     </style>
 
     <style name="TextAppearance.EditEvent_SpinnerButton" parent="TextAppearance.EditEvent_Spinner">
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="TextAppearance.EditEvent_homeTime">
@@ -281,7 +281,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
     </style>
-
+  
+  <style name="searchFormField">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+  
     <style name="formField.text">
         <item name="android:background">@drawable/login_group_row</item>
         <item name="android:singleLine">true</item>
@@ -304,4 +310,23 @@
         <item name="android:padding">5dip</item>
         <item name="android:textSize">20dip</item>
     </style>
+    
+    
+    <!-- SEARCH -->
+     <style name="searchFormField.text">
+        <item name="android:singleLine">true</item>
+        <item name="android:maxLength">50</item>
+        <item name="android:padding">5dip</item>
+        <item name="android:background">#00000000</item>
+        <item name="android:textSize">20dip</item>
+    </style>
+
+      <style name="formFieldLabel.searchFormtitle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">5dip</item>
+        <item name="android:textSize">20dip</item>
+        
+    </style>
+    
+     
 </resources>

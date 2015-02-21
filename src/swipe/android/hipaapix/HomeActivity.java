@@ -1,6 +1,5 @@
 package swipe.android.hipaapix;
 
-
 import swipe.android.hipaapix.R;
 import swipe.android.hipaapix.core.FragmentInfo;
 import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
@@ -30,28 +29,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-public class HomeActivity extends  CustomActionBarFragmentContainer {
+public class HomeActivity extends HipaaPixTabsActivityContainer {
 
 	String id = "0";
 
 	Menu menu;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-	    
-
+		// setContentView(R.layout.activity_main);
 
 	}
 
-
 	@Override
 	protected void addDefaultFragments() {
-		FragmentInfo homeInfo = new FragmentInfo(new SearchFragment(), R.drawable.home_selected, R.drawable.home_unselected);
+		FragmentInfo homeInfo = new FragmentInfo(new SearchFragment(),
+				R.drawable.home_selected, R.drawable.home_unselected);
 		mapFragList.put("Home", homeInfo);
-		FragmentInfo settingsInfo = new FragmentInfo(new SettingsFragment(), R.drawable.settings_selected, R.drawable.settings_unselected);
-		
+		FragmentInfo settingsInfo = new FragmentInfo(new SettingsFragment(),
+				R.drawable.settings_selected, R.drawable.settings_unselected);
+
 		mapFragList.put("Settings", settingsInfo);
 
 	}
@@ -60,12 +58,11 @@ public class HomeActivity extends  CustomActionBarFragmentContainer {
 	public void onBackPressed() {
 		this.finish();
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	   super.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
 
 	@Override
 	protected View createActionBarView() {
