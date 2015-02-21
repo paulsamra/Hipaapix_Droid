@@ -1,14 +1,22 @@
 package swipe.android.hipaapix;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import org.droidparts.widget.ClearableEditText;
+
 import swipe.android.hipaapix.core.BaseFragment;
+import swipe.android.hipaapix.core.FragmentInfo;
+import swipe.android.hipaapix.core.GridOfSearchResultsNoTakePictureFragment;
+import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
 import swipe.android.hipaapix.viewAdapters.ExpandableListAdapter;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,7 +28,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 
+import com.edbert.library.containers.PositionalLinkedMap;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
 
@@ -28,9 +38,10 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 	Button go;
 	ExpandableListView expListView;
 	List<String> listDataHeader;
-	HashMap<String, List<String>> listDataChild;
+	PositionalLinkedMap<String, List<String>> listDataChild = new PositionalLinkedMap<String, List<String>>();
+
 	ExpandableListAdapter listAdapter;
-	EditText start_date;
+	ClearableEditText start_date;
 
 	public static final String DATEPICKER_START_TAG = "datepicker_start";
 	Calendar calendar;
@@ -61,20 +72,25 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 		// get the listview
 		expListView = (ExpandableListView) view
 				.findViewById(R.id.category_list);
-		expListView.setOnItemClickListener(new OnItemClickListener() {
+		expListView.setOnChildClickListener(new OnChildClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				/*mActivity.pushFragments(AppConstants.TAB_A, new
-					 AppTabASecondFragment(),true,true);*/
-				/*Intent i = new Intent(SearchFragment.this.getActivity(),
-						GridOfSearchResultsNoTakePictureActivity.class);
-				SearchFragment.this.getActivity().startActivity(i);*/
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				Bundle b = new Bundle();
+				
+		
+				List<String> children = listDataChild.getValue(groupPosition);	
+				String value = children.get(childPosition);
+				b.putString(CategorySearchResultFragment.BUNDLE_TITLE_ID, value);
+				mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A, new
+						 CategorySearchResultFragment(),true,true,b);
+				return false;
 			}
 
 		});
-		start_date = (EditText) view.findViewById(R.id.date);
+		start_date = (ClearableEditText) view.findViewById(R.id.date);
+
 		this.setUpDate(start_date);
 		// preparing list data
 		prepareListData();
@@ -100,14 +116,15 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 		if (start_date == null) {
 			return;
 		}
-		start_date.setOnTouchListener(new OnTouchListener() {
+		start_date.setFocusable(false);
+		start_date.setOnClickListener(new OnClickListener() {
+		
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				datePickerDialog.setVibrate(false);
-				datePickerDialog.setYearRange(1985, 2028);
-				datePickerDialog.show(SearchFragment.this.getActivity()
-						.getSupportFragmentManager(), DATEPICKER_START_TAG);
-				return false;
+			public void onClick(View v) {	datePickerDialog.setVibrate(false);
+			datePickerDialog.setYearRange(1985, 2028);
+			datePickerDialog.show(SearchFragment.this.getActivity()
+					.getSupportFragmentManager(), DATEPICKER_START_TAG);
+				
 			}
 		});
 
@@ -115,8 +132,7 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 
 	private void prepareListData() {
 		listDataHeader = new ArrayList<String>();
-		listDataChild = new HashMap<String, List<String>>();
-
+		listDataChild = new PositionalLinkedMap<String, List<String>>();
 		// Adding child data
 		listDataHeader.add("Search By Category");
 		// Adding child data
@@ -135,7 +151,13 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 	@Override
 	public void onDateSet(DatePickerDialog datePickerDialog, int year,
 			int month, int day) {
-		// TODO Auto-generated method stub
+		String monthName = new DateFormatSymbols().getMonths()[month];
+		String total = monthName + " " + day + ", " + year;
+		if (datePickerDialog.getTag().equals(DATEPICKER_START_TAG)) {
+			start_date.setText(total);
+			start_date.setTextColor(Color.BLACK);
+			start_date.setClearIconVisible(true);
+		} 
 
 	}
 }

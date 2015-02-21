@@ -2,9 +2,9 @@ package swipe.android.hipaapix.viewAdapters;
 
 import java.util.List;
 
-import swipe.android.hipaapix.GridOfSearchResultsWithTakePictureFragment;
 import swipe.android.hipaapix.HipaapixApplication;
 import swipe.android.hipaapix.R;
+import swipe.android.hipaapix.core.GridOfSearchResultsWithTakePictureFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;

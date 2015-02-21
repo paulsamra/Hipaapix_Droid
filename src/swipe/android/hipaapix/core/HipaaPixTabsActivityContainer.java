@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,8 +26,8 @@ import com.edbert.library.containers.PositionalLinkedMap;
 public abstract class HipaaPixTabsActivityContainer extends
 		CustomActionBarActivity implements TabListener {
 	String id = "0";
-	  public static final String TAB_A  = "tab_a_identifier";
-	   public static final String TAB_B  = "tab_b_identifier";
+	public static final String TAB_A = "tab_a_identifier";
+	public static final String TAB_B = "tab_b_identifier";
 
 	protected PositionalLinkedMap<String, FragmentInfo> mapFragList = new PositionalLinkedMap<String, FragmentInfo>();
 
@@ -34,7 +35,7 @@ public abstract class HipaaPixTabsActivityContainer extends
 	private TabHost mTabHost;
 
 	/* A HashMap of stacks, where we use tab identifier as keys.. */
-	private HashMap<String, Stack<Fragment>> mStacks;
+	private HashMap<String, Stack<FragmentInfo>> mStacks;
 
 	/* Save current tabs identifier in this.. */
 	private String mCurrentTab;
@@ -47,14 +48,12 @@ public abstract class HipaaPixTabsActivityContainer extends
 		 * Navigation stacks for each tab gets created.. tab identifier is used
 		 * as key to get respective stack for each tab
 		 */
-		
-	
 
-		mStacks = new HashMap<String, Stack<Fragment>>();
+		mStacks = new HashMap<String, Stack<FragmentInfo>>();
 		addDefaultFragments();
 
-		mStacks.put(TAB_A, new Stack<Fragment>());
-		mStacks.put(TAB_B, new Stack<Fragment>());
+		mStacks.put(TAB_A, new Stack<FragmentInfo>());
+		mStacks.put(TAB_B, new Stack<FragmentInfo>());
 
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
@@ -106,12 +105,12 @@ public abstract class HipaaPixTabsActivityContainer extends
 				 * add to stack is true.
 				 */
 				if (tabId.equals(TAB_A)) {
-					
-					pushFragments(tabId,mapFragList.getValue(0).getFragment(), false,
-							true);
+
+					pushFragments(tabId, mapFragList.getValue(0).getFragment(),
+							false, true, null);
 				} else if (tabId.equals(TAB_B)) {
-					pushFragments(tabId, mapFragList.getValue(1).getFragment(), false,
-							true);
+					pushFragments(tabId, mapFragList.getValue(1).getFragment(),
+							false, true,null);
 				}
 			} else {
 				/*
@@ -119,8 +118,8 @@ public abstract class HipaaPixTabsActivityContainer extends
 				 * one fragment. No need of animation, no need of stack pushing.
 				 * Just show the target fragment
 				 */
-				pushFragments(tabId, mStacks.get(tabId).lastElement(), false,
-						false);
+				pushFragments(tabId, mStacks.get(tabId).lastElement().getFragment(), false,
+						false,  mStacks.get(tabId).lastElement().getB());
 			}
 		}
 	};
@@ -143,13 +142,15 @@ public abstract class HipaaPixTabsActivityContainer extends
 	 * other cases.
 	 */
 	public void pushFragments(String tag, Fragment fragment,
-			boolean shouldAnimate, boolean shouldAdd) {
+			boolean shouldAnimate, boolean shouldAdd, Bundle b) {
 		if (shouldAdd)
-			mStacks.get(tag).push(fragment);
+			mStacks.get(tag).push(new FragmentInfo(fragment, b));
 		FragmentManager manager = getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
 		if (shouldAnimate)
 			ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+		
+		fragment.setArguments(b);
 		ft.replace(R.id.realtabcontent, fragment);
 		ft.commit();
 	}
@@ -160,7 +161,9 @@ public abstract class HipaaPixTabsActivityContainer extends
 		 * be shown after the fragment transaction given below
 		 */
 		Fragment fragment = mStacks.get(mCurrentTab).elementAt(
-				mStacks.get(mCurrentTab).size() - 2);
+				mStacks.get(mCurrentTab).size() - 2).getFragment();
+		fragment.setArguments(mStacks.get(mCurrentTab).elementAt(
+				mStacks.get(mCurrentTab).size() - 2).getB());
 
 		/* pop current fragment from stack.. */
 		mStacks.get(mCurrentTab).pop();
@@ -169,33 +172,39 @@ public abstract class HipaaPixTabsActivityContainer extends
 		 * We have the target fragment in hand.. Just show it.. Show a standard
 		 * navigation animation
 		 */
+
 		FragmentManager manager = getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
 		ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
 		ft.replace(R.id.realtabcontent, fragment);
 		ft.commit();
+		if (mStacks.get(mCurrentTab).size() == 1) {
+			setupActionBar();
+		}
 	}
 
 	@Override
 	public void onBackPressed() {
-	   	if(((BaseFragment)mStacks.get(mCurrentTab).lastElement()).onBackPressed() == false){
-       		/*
-       		 * top fragment in current tab doesn't handles back press, we can do our thing, which is
-       		 * 
-       		 * if current tab has only one fragment in stack, ie first fragment is showing for this tab.
-       		 *        finish the activity
-       		 * else
-       		 *        pop to previous fragment in stack for the same tab
-       		 * 
-       		 */
-       		if(mStacks.get(mCurrentTab).size() == 1){
-       			super.onBackPressed();  // or call finish..
-       		}else{
-       			popFragments();
-       		}
-       	}else{
-       		//do nothing.. fragment already handled back button press.
-       	}
+		if (((BaseFragment) mStacks.get(mCurrentTab).lastElement().getFragment())
+				.onBackPressed() == false) {
+			/*
+			 * top fragment in current tab doesn't handles back press, we can do
+			 * our thing, which is
+			 * 
+			 * if current tab has only one fragment in stack, ie first fragment
+			 * is showing for this tab. finish the activity else pop to previous
+			 * fragment in stack for the same tab
+			 */
+
+			if (mStacks.get(mCurrentTab).size() == 1) {
+
+				super.onBackPressed(); // or call finish..
+			} else {
+				popFragments();
+			}
+		} else {
+			// do nothing.. fragment already handled back button press.
+		}
 	}
 
 	/*
@@ -210,7 +219,7 @@ public abstract class HipaaPixTabsActivityContainer extends
 		}
 
 		/* Now current fragment on screen gets onActivityResult callback.. */
-		mStacks.get(mCurrentTab).lastElement()
+		mStacks.get(mCurrentTab).lastElement().getFragment()
 				.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -225,8 +234,9 @@ public abstract class HipaaPixTabsActivityContainer extends
 		fragmentTransaction = manager.beginTransaction();
 
 		// need current fragment?
-		Fragment fragment = mapFragList.getValue(tab.getPosition()).getFragment();
-
+		Fragment fragment = mapFragList.getValue(tab.getPosition())
+				.getFragment();
+fragment.setArguments(mapFragList.getValue(tab.getPosition()).getB());
 		// fragment = navDrawerSelected.getFragment();
 		// replace the fragment once found
 		if (fragment != null) {

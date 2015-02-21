@@ -45,18 +45,13 @@ public class HomeActivity extends HipaaPixTabsActivityContainer {
 	@Override
 	protected void addDefaultFragments() {
 		FragmentInfo homeInfo = new FragmentInfo(new SearchFragment(),
-				R.drawable.home_selected, R.drawable.home_unselected);
+				null);
 		mapFragList.put("Home", homeInfo);
 		FragmentInfo settingsInfo = new FragmentInfo(new SettingsFragment(),
-				R.drawable.settings_selected, R.drawable.settings_unselected);
+		null);
 
 		mapFragList.put("Settings", settingsInfo);
 
-	}
-
-	@Override
-	public void onBackPressed() {
-		this.finish();
 	}
 
 	@Override

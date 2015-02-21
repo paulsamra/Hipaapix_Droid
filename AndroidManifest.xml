@@ -44,6 +44,7 @@
         </activity>
         <activity
             android:name="swipe.android.hipaapix.HomeActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize"
             android:screenOrientation="portrait" >
         </activity>
            <activity

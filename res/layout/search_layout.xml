@@ -29,7 +29,7 @@
             style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/first_name" />
 
-         <EditText
+         <org.droidparts.widget.ClearableEditText
             android:id="@+id/first_name_field"
             style="@style/searchFormField.text"
             android:hint="Enter Name" />
@@ -46,7 +46,7 @@
             style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/last_name" />
 
-        <EditText
+        <org.droidparts.widget.ClearableEditText
             android:id="@+id/last_name_field"
             style="@style/searchFormField.text"
             android:hint="Enter Name" />
@@ -63,7 +63,7 @@
             style="@style/formFieldLabel.searchFormtitle"
             android:text="@string/birth_date" />
 
-          <EditText
+          <org.droidparts.widget.ClearableEditText
             android:id="@+id/date"
             style="@style/searchFormField.text"
             android:hint="Select Date" />

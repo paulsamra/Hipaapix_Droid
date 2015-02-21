@@ -1,11 +1,14 @@
-package swipe.android.hipaapix;
+package swipe.android.hipaapix.core;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import swipe.android.hipaapix.Constants;
+import swipe.android.hipaapix.GridActivity;
+import swipe.android.hipaapix.R;
+import swipe.android.hipaapix.R.id;
+import swipe.android.hipaapix.R.layout;
 import swipe.android.hipaapix.viewAdapters.ImageAdapterWithTakePicture;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,19 +26,18 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class GridOfSearchResultsWithTakePictureFragment extends GridFragment {
+public class GridOfSearchResultsWithTakePictureActivity extends GridActivity {
 	public static final int INDEX = 1;
 	List<String> imageUrls = Arrays.asList(Constants.IMAGES);
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.grid_layout, container, false);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-		listView = (GridView) view.findViewById(R.id.grid);
-		((GridView) listView).setAdapter(new ImageAdapterWithTakePicture(this
-				.getActivity(), imageUrls));
-
+		setContentView(R.layout.grid_layout);
+		listView = (GridView) findViewById(R.id.grid);
+		((GridView) listView).setAdapter(new ImageAdapterWithTakePicture(this,
+				imageUrls));
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -43,7 +45,6 @@ public class GridOfSearchResultsWithTakePictureFragment extends GridFragment {
 				// /startImagePagerActivity(position);
 			}
 		});
-		return view;
-	}
 
+	}
 }

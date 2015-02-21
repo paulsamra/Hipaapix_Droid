@@ -28,7 +28,7 @@ public class FieldsParsingUtils {
 		}
 		return -1;
 	}
-
+	
 	public static long getTime(String dateString) {
 		return getTime(dateString,"00:00");
 	}

@@ -1,33 +1,32 @@
 package swipe.android.hipaapix.core;
 
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
-public class FragmentInfo{
+
+public class FragmentInfo {
 	Fragment fragment;
+	Bundle b;
+
+	public Bundle getB() {
+		return b;
+	}
+
+	public void setB(Bundle b) {
+		this.b = b;
+	}
+
 	public Fragment getFragment() {
 		return fragment;
 	}
+
 	public void setFragment(Fragment fragment) {
 		this.fragment = fragment;
 	}
-	int selected_icon, unselected_icon;
-	
-	public FragmentInfo(Fragment f, int selected_icon, int unselected_icon) {
+
+	public FragmentInfo(Fragment f, Bundle b) {
 
 		this.fragment = f;
-		this.selected_icon = selected_icon;
-		this.unselected_icon = unselected_icon;
+		this.b = b;
 	}
-	public int getSelected_icon() {
-		return selected_icon;
-	}
-	public void setSelected_icon(int selected_icon) {
-		this.selected_icon = selected_icon;
-	}
-	public int getUnselected_icon() {
-		return unselected_icon;
-	}
-	public void setUnselected_icon(int unselected_icon) {
-		this.unselected_icon = unselected_icon;
-	}
+
 }

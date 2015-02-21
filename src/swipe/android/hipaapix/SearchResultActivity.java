@@ -3,6 +3,7 @@ package swipe.android.hipaapix;
 import java.util.ArrayList;
 
 import swipe.android.hipaapix.classes.patients.Patient;
+import swipe.android.hipaapix.core.GridOfSearchResultsWithTakePictureActivity;
 import swipe.android.hipaapix.json.patientsResponse.PatientsResultsResponse;
 import swipe.android.hipaapix.viewAdapters.SearchResultsAdapter;
 import android.app.ListActivity;

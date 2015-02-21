@@ -23,7 +23,7 @@ import com.throrinstudio.android.library.widgets.dashboard.DashBoardLayout;
 
 public abstract class CustomActionBarActivity extends ActionBarActivity {
 
-	private void setupActionBar() {
+	public void setupActionBar() {
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayShowTitleEnabled(false);
 
@@ -40,8 +40,6 @@ public abstract class CustomActionBarActivity extends ActionBarActivity {
 		//getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
 		getActionBar().setIcon(
 				   new ColorDrawable(getResources().getColor(android.R.color.transparent))); 
-		
-		
 		
 	}
 
