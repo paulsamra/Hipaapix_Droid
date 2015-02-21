@@ -60,9 +60,12 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 				/* Go to next fragment in navigation stack */
 				// mActivity.pushFragments(AppConstants.TAB_A, new
 				// AppTabASecondFragment(),true,true);
-				Intent i = new Intent(SearchFragment.this.getActivity(),
+				/*Intent i = new Intent(SearchFragment.this.getActivity(),
 						SearchResultActivity.class);
-				SearchFragment.this.getActivity().startActivity(i);
+				SearchFragment.this.getActivity().startActivity(i);*/
+				mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A, new
+						PatientSearchListFragment(),true,true,null);
+				
 			}
 		});
 		datePickerDialog = DatePickerDialog.newInstance(this,

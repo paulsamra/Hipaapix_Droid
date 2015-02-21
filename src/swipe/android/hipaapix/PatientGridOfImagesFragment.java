@@ -2,8 +2,8 @@ package swipe.android.hipaapix;
 
 import swipe.android.hipaapix.core.GridOfSearchResultsNoTakePictureFragment;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class CategorySearchResultFragment extends
+public class PatientGridOfImagesFragment extends
 		GridOfSearchResultsNoTakePictureFragment {
 	public static final String BUNDLE_TITLE_ID = "title";
 
@@ -35,9 +35,26 @@ public class CategorySearchResultFragment extends
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.add_picture_menu, menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	this.getActivity().onBackPressed();
-		return true;
+		// handle item selection
+		switch (item.getItemId()) {
+		case R.id.add_picture_item:
+			launchCamera();
+			return true;
+		default:
+			this.getActivity().onBackPressed();
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	public void launchCamera(){
+		Intent i = new Intent(this.getActivity(), HipaaPixCamera.class);
+		this.getActivity().startActivity(i);
 	}
 
 }
