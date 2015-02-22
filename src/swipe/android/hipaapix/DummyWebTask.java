@@ -27,7 +27,7 @@ public class DummyWebTask<T> extends GetDataWebTask<T> {
 	@Override
 	protected T doInBackground(String... uri) {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

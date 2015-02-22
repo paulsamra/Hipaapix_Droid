@@ -65,6 +65,13 @@
             android:name="swipe.android.hipaapix.HipaaPixCamera"
             android:screenOrientation="portrait" >
         </activity>
+              <activity
+            android:name="swipe.android.hipaapix.AddPhotoDetailsActivity"
+            android:screenOrientation="portrait" >
+        </activity><activity
+            android:name="swipe.android.hipaapix.FullScreenViewActivity"
+            android:screenOrientation="portrait" >
+        </activity>
         
         <service
             android:name="swipe.android.hipaapix.sync.HippaPixSyncService"

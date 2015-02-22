@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/image_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".75"
+        android:background="#f00" >
+    </ImageView>
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".25"
+        android:shrinkColumns="0"
+        android:stretchColumns="1" >
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4sp" />
+
+        <TableRow android:layout_margin="4dip"
+            android:id="@+id/category_table_row" >
+            <TextView
+                android:id="@+id/choose_category"
+                style="@style/formFieldLabel.searchFormtitle"
+                android:text="Choose a Category"
+                android:textColor="@color/black" />
+        </TableRow>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:background="#90909090" />
+
+        <TableRow android:layout_margin="4dip" >
+  
+            <org.droidparts.widget.ClearableEditText
+                android:id="@+id/notes_field"
+                style="@style/searchFormField.text"
+                android:hint="Notes (optional)" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

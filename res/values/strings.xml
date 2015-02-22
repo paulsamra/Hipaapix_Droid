@@ -66,5 +66,6 @@
     <string name="last_name">Last Name</string>
     <string name="birth_date">Bithdate</string>
     <string name="new_patient">New Patient?</string>
-
+    <string name="menu_lock">Lock</string>
+    <string name="menu_unlock">Unlock</string>
 </resources>

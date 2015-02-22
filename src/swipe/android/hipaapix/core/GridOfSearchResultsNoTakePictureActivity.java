@@ -27,7 +27,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class GridOfSearchResultsNoTakePictureActivity extends GridActivity {
+public class GridOfSearchResultsNoTakePictureActivity extends GridActivity implements OnItemClickListener{
 	public static final int INDEX = 1;
 	List<String> imageUrls = Arrays.asList(Constants.IMAGES);
 
@@ -39,14 +39,15 @@ public class GridOfSearchResultsNoTakePictureActivity extends GridActivity {
 		listView = (GridView) findViewById(R.id.grid);
 		((GridView) listView).setAdapter(new ImageAdapterNoTakePicture(this,
 				imageUrls));
-		listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// /startImagePagerActivity(position);
-			}
-		});
+		listView.setOnItemClickListener(this);
 
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
