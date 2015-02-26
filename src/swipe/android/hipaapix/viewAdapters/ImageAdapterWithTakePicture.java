@@ -28,8 +28,8 @@ public class ImageAdapterWithTakePicture extends BaseAdapter {
 	public ImageAdapterWithTakePicture(Context ctx, List<String> urls) {
 		inflater = LayoutInflater.from(ctx);
 		this.imageUrls = urls;
-		options = HipaapixApplication.getDefaultOptions();
-	}
+	     options = ((HipaapixApplication)  ctx.getApplicationContext()).getDefaultOptions();
+		 }
 
 	@Override
 	public int getCount() {

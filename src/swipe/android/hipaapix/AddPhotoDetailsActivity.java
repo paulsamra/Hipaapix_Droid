@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,11 +31,16 @@ public class AddPhotoDetailsActivity extends Activity {
 		ab.setDisplayShowTitleEnabled(true);
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
-
+		getActionBar().setDisplayShowHomeEnabled(false);
+		
+		
 		ab.setTitle("Photo Details");
 
-		Intent intent = getIntent();
-		Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
+		
+		Bundle extras = getIntent().getExtras();
+		byte[] photo = extras.getByteArray("BitmapImage");
+		Bitmap bitmap  = BitmapFactory.decodeByteArray (photo, 0, photo.length);
+		//Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
 		ImageView imagePreview = (ImageView) findViewById(R.id.image_preview);
 		imagePreview.setImageBitmap(bitmap);
 
@@ -100,6 +106,7 @@ public class AddPhotoDetailsActivity extends Activity {
 			return true;
 
 		default:
+			this.onBackPressed();
 			return super.onOptionsItemSelected(item);
 		}
 	}

@@ -1,5 +1,6 @@
 package swipe.android.hipaapix;
 
+import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -87,7 +88,12 @@ public class FieldsParsingUtils {
 		int year_i = Integer.valueOf(year);
 
 		String finalFormat = year_i + "-" + month_i + "-" + day_i;
+		if(!time.equals("")){
+			
 		return finalFormat + " " + time;
+		}else{
+			return finalFormat;
+		}
 	}
 
 }

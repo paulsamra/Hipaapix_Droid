@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".75"
-        android:background="#f00" >
+        android:background="#000000" >
     </ImageView>
 
     <TableLayout
@@ -41,6 +41,7 @@
             <org.droidparts.widget.ClearableEditText
                 android:id="@+id/notes_field"
                 style="@style/searchFormField.text"
+                  android:inputType="textMultiLine"
                 android:hint="Notes (optional)" />
         </TableRow>
     </TableLayout>

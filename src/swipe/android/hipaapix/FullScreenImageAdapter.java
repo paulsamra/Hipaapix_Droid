@@ -3,6 +3,7 @@ package swipe.android.hipaapix;
 
 import java.util.ArrayList;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
@@ -57,13 +58,8 @@ public class FullScreenImageAdapter extends PagerAdapter {
         imgDisplay = (TouchImageView) viewLayout.findViewById(R.id.imgDisplay);
         btnClose = (Button) viewLayout.findViewById(R.id.btnClose);
         
-        
-        /*
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(_imagePaths.get(position), options);
-        imgDisplay.setImageBitmap(bitmap);
-        */ImageLoader.getInstance().displayImage(_imagePaths.get(position), imgDisplay, HipaapixApplication.getDefaultOptions(),
+        DisplayImageOptions options = ((HipaapixApplication)  _activity.getApplication()).getDefaultOptions();
+       ImageLoader.getInstance().displayImage(_imagePaths.get(position), imgDisplay, options,
 				new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingStarted(String imageUri, View view) {

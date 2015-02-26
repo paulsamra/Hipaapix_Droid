@@ -2,18 +2,25 @@ package swipe.android.hipaapix;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONObject;
 
 import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.core.BaseFragment;
 import swipe.android.hipaapix.core.GridOfSearchResultsWithTakePictureActivity;
 import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
 import swipe.android.hipaapix.json.patientsResponse.PatientsResultsResponse;
+import swipe.android.hipaapix.json.searchvault.Document;
+import swipe.android.hipaapix.json.searchvault.SearchVaultResponse;
+import swipe.android.hipaapix.json.users.GetUserDataResponse;
 import swipe.android.hipaapix.viewAdapters.SearchResultsAdapter;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,25 +29,30 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.edbert.library.network.AsyncTaskCompleteListener;
+import com.edbert.library.network.GetDataWebTask;
+import com.edbert.library.utils.MapUtils;
 
 public class PatientSearchListFragment extends BaseFragment implements
-		AsyncTaskCompleteListener<PatientsResultsResponse>, AdapterView.OnItemClickListener {
+		AsyncTaskCompleteListener<SearchVaultResponse>,
+		AdapterView.OnItemClickListener {
 
 	private SearchResultsAdapter resultsListAdapter;
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		new DummyWebTask<Object>(this.getActivity(), this, Object.class)
-				.execute("", "", "");
+
 	}
+
+	String options = "";
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.list_layout, container, false);
 		ListView lView = (ListView) view.findViewById(android.R.id.list);
 		this.resultsListAdapter = new SearchResultsAdapter(this.getActivity(),
-				R.id.name, new ArrayList<Patient>());
+				R.id.name, new ArrayList<Document>());
 		lView.setAdapter(resultsListAdapter);
 		lView.setOnItemClickListener(this);
 		getActivity().getActionBar().setDisplayOptions(
@@ -51,22 +63,43 @@ public class PatientSearchListFragment extends BaseFragment implements
 		ab.setHomeButtonEnabled(true);
 
 		ab.setTitle("Search Result");
+
+		Bundle extras = this.getArguments();
+		options = extras.getString("options");
+
+		// we want to launc this
 		setHasOptionsMenu(true);
+
+
+		String url = SessionManager.getInstance(this.getActivity())
+				.searchVaultURL(options);
+
+		Map<String, String> headers = SessionManager.getInstance(
+				this.getActivity()).defaultSessionHeaders();
+
+		new GetDataWebTask<SearchVaultResponse>(this.getActivity(),
+				(AsyncTaskCompleteListener<SearchVaultResponse>) this,
+				SearchVaultResponse.class).execute(url,
+				MapUtils.mapToString(headers));
+
 		return view;
 	}
 
-
-
-
 	@Override
-	public void onTaskComplete(PatientsResultsResponse result) {
-		SearchResultsAdapter adapter = (SearchResultsAdapter) this.resultsListAdapter;
-		adapter.clear();
-		result = new PatientsResultsResponse();
-		for (Patient patient : result.getPatients()) {
-			adapter.add(patient);
+	public void onTaskComplete(SearchVaultResponse result) {
+		if (!result.isValid()) {
+
+		} else {
+			SearchResultsAdapter adapter = (SearchResultsAdapter) this.resultsListAdapter;
+			adapter.clear();
+			for (Document d : result.getData().getDocuments()) {
+				adapter.add(d);
+			}
+			adapter.notifyDataSetChanged();
+		/*	for(Document d : result.getData().getDocuments()){
+				Log.d("Document" , SessionManager.getInstance(this.getActivity()).decode64(d.getDocument()));
+			}*/
 		}
-		adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -74,14 +107,18 @@ public class PatientSearchListFragment extends BaseFragment implements
 		this.getActivity().onBackPressed();
 		return true;
 	}
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Bundle b = new Bundle();
-		String value = resultsListAdapter.getItem(position).getName();
-		b.putString(PatientGridOfImagesFragment.BUNDLE_TITLE_ID, value);
-		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A, new
-				PatientGridOfImagesFragment(),true,true,b);
-		
+		Document patient = resultsListAdapter.getItem(position);
+	
+		String realPatient = SessionManager.getInstance(this.getActivity()).decode64(patient.getDocument());
+	
+		b.putString(PatientGridOfImagesFragment.BUNDLE_TITLE_ID, realPatient);
+		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
+				new PatientGridOfImagesFragment(), true, true, b);
+
 	}
 }

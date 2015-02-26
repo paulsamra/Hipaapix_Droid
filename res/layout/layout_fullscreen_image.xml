@@ -41,7 +41,7 @@
         android:paddingRight="10dp"
         android:text="Patient" />
      <TextView
-           android:id="@+id/category"
+           android:id="@+id/category_img"
            android:layout_below="@id/patient"
         android:layout_width="wrap_content"
         android:layout_height="30dp"

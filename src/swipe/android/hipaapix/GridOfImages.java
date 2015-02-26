@@ -25,10 +25,8 @@ public class GridOfImages extends GridActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		options = HipaapixApplication.getDefaultOptions();/*new DisplayImageOptions.Builder().cacheInMemory(true)
-				.cacheOnDisk(false).considerExifParams(true)
-				.bitmapConfig(Bitmap.Config.RGB_565).build();*/
+	     options = ((HipaapixApplication)  this.getApplication()).getDefaultOptions();
+	 
 
 		setContentView(R.layout.grid_layout);
 		listView = (GridView) findViewById(R.id.grid);

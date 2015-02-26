@@ -1,7 +1,13 @@
 package swipe.android.hipaapix;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import swipe.android.hipaapix.json.login.LoginResponse;
+import swipe.android.hipaapix.json.users.GetUserDataResponse;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,12 +26,16 @@ import android.widget.LinearLayout;
 
 import com.edbert.library.greyButton.GreyedOutButton;
 import com.edbert.library.network.AsyncTaskCompleteListener;
+import com.edbert.library.network.GetDataWebTask;
+import com.edbert.library.network.PostDataWebTask;
+import com.edbert.library.utils.MapUtils;
 
-public class LoginActivity extends Activity  {
+public class LoginActivity extends HipaaActivity implements
+		AsyncTaskCompleteListener {
 
 	GreyedOutButton login;
 	Button signUp;
-	//EditText usernameET, passwordET;
+	EditText usernameET, passwordET;
 	LinearLayout loginForm;
 
 	@Override
@@ -37,8 +47,8 @@ public class LoginActivity extends Activity  {
 			goToNextActivity();
 		}
 		getActionBar().hide();
-		//usernameET = (EditText) findViewById(R.id.login_username_input);
-		//passwordET = (EditText) findViewById(R.id.login_password_input);
+		usernameET = (EditText) findViewById(R.id.login_username_input);
+		passwordET = (EditText) findViewById(R.id.login_password_input);
 		loginForm = (LinearLayout) findViewById(R.id.login_insert);
 		loginForm.setVisibility(View.VISIBLE);
 		signUp = (Button) findViewById(R.id.login_sign_up_button);
@@ -57,9 +67,8 @@ public class LoginActivity extends Activity  {
 			}
 
 		});
-		
 
-	/*	usernameET.addTextChangedListener(new TextWatcher() {
+		usernameET.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -104,43 +113,67 @@ public class LoginActivity extends Activity  {
 
 			}
 
-		});*/
-	}
-
-	public void doSignUp() {
+		});
 
 	}
 
-	public void onTaskComplete(Object result) {
-	/*	if (result == null) {
-			HipaapixApplication.displayNetworkNotAvailableDialog(this);
-		} else if (!result.isValid()) {
-			String loginTitle = this.getString(R.string.login_error_title);
-
-			String try_again = this.getString(R.string.try_again);
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(result.getError())
-					.setTitle(loginTitle)
-					.setCancelable(false)
-					.setPositiveButton(try_again,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.dismiss();
-								}
-							});
-
-			AlertDialog alert = builder.create();
-			alert.show();
+	public void doLoginResponse(LoginResponse loginResponse) {
+		if (!loginResponse.isValid()) {
+			displayError(loginResponse);
 		} else {
 			SessionManager.getInstance(this).setIsLoggedIn(true);
-			Log.d("USER ID", String.valueOf(result.getUserID()));
+			SessionManager.getInstance(this).setAccessToken(
+					String.valueOf(loginResponse.getUser().getAccess_token()));
+			SessionManager.getInstance(this).setUserName(
+					String.valueOf(loginResponse.getUser().getUsername()));
 			SessionManager.getInstance(this).setUserID(
-					String.valueOf(result.getUserID()));
-			SessionManager.getInstance(this).setAuthToken(result.getToken());
+					String.valueOf(loginResponse.getUser().getUser_id()));
 
-			goToNextActivity();
-		}*/
+			String url = SessionManager.getInstance(this).getUserURL();
+
+			Map<String, String> headers = SessionManager.getInstance(this)
+					.defaultSessionHeaders();
+
+			new GetDataWebTask<GetUserDataResponse>(this,
+					GetUserDataResponse.class).execute(url,
+					MapUtils.mapToString(headers));
+		}
+	}
+
+	@Override
+	public void onTaskComplete(Object response) {
+		if (response == null) {
+			HipaapixApplication.displayNetworkNotAvailableDialog(this);
+		} else if (response instanceof LoginResponse) {
+			doLoginResponse((LoginResponse) response);
+		} else {
+			doFinalLoginFromUserData((GetUserDataResponse) response);
+		}
+	}
+
+	public void doFinalLoginFromUserData(GetUserDataResponse response) {
+		if (!response.isValid()) {
+			displayError(response);
+		} else {
+			String decoded = SessionManager.getInstance(this).decode64(
+					response.getUser().getAttributes());
+			JSONObject decodedJSON;
+			try {
+				decodedJSON = new JSONObject(decoded);
+
+				String patient_schema = decodedJSON.getString("patient_schema");
+				String patient_image_schema = decodedJSON
+						.getString("patient_image_schema");
+				String vault_id = decodedJSON.getString("vault_id");
+				SessionManager.getInstance(this).setSchemaID(patient_schema);
+				SessionManager.getInstance(this).setVaultID(vault_id);
+
+				this.goToNextActivity();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public void goToNextActivity() {
@@ -156,38 +189,33 @@ public class LoginActivity extends Activity  {
 					.displayNetworkNotAvailableDialog(this);
 			return;
 		}
-		Map<String, String> headers = SessionManager.getInstance(this)
-				.defaultSessionHeaders();
-		String username = "";
-		String password = "";
+
+		Map<String, String> formHeaders = new LinkedHashMap<String, String>();
+		formHeaders.put("account_id", SessionManager.accountID);
 		if (HipaapixApplication.DEVELOPER_MODE) {
-			username = "ramsin";
-			password = "ramsin";
+			formHeaders.put("username", "testuser1");
+			formHeaders.put("password", "12345678");
+
 		} else {
-	//		username = usernameET.getText().toString();
-	//		password = passwordET.getText().toString();
+			formHeaders.put("username", usernameET.getText().toString());
+			formHeaders.put("password", passwordET.getText().toString());
 		}
-		headers.put("username", username);
-		headers.put("password", password);
-		goToNextActivity();
-		/*
-		 * new PostDataWebTask<JsonLoginResponse>(this, JsonLoginResponse.class)
-		 * .execute(SessionManager.getInstance(this).loginURL(),
-		 * MapUtils.mapToString(headers));
-		 */
+		new PostDataWebTask<LoginResponse>(this, this, LoginResponse.class,
+				true, true).execute(SessionManager.getInstance(this)
+				.getLoginURL(), "", MapUtils.mapToString(formHeaders));
+
 	}
-	
 
 	private void enableDisableLoginButton() {
 
-	/*	if (usernameET.getText().toString().length() > 0
-				&& passwordET.getText().toString().length() > 0) {
-			//
+		if (usernameET.getText().toString().length() > 0
+				&& passwordET.getText().toString().length() > 0) { //
 			login.setEnabled(true);
 		} else {
 			login.setEnabled(false);
 
-		}*/
+		}
+
 	}
 
 }

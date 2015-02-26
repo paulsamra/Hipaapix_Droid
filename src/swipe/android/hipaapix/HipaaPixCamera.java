@@ -1,5 +1,6 @@
 package swipe.android.hipaapix;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import android.app.ActionBar;
@@ -7,11 +8,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,7 +23,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback {
+public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, Camera.PictureCallback  {
 
 	Camera camera;
 	SurfaceView surfaceView;
@@ -74,7 +77,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback {
 
 	public void takePicture() {
 		camera.takePicture(myShutterCallback, myPictureCallback_RAW,
-				myPictureCallback_JPG);
+				this);
 	}
 
 	ShutterCallback myShutterCallback = new ShutterCallback() {
@@ -98,10 +101,15 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback {
 		@Override
 		public void onPictureTaken(byte[] arg0, Camera arg1) {
 			// TODO Auto-generated method stub
-			Bitmap bitmapPicture = BitmapFactory.decodeByteArray(arg0, 0,
-					arg0.length);
+			/*Bitmap bitmapPicture = BitmapFactory.decodeByteArray(arg0, 0,
+					arg0.length);*/
+			//Log.d("hi","hi");
 			Intent intent = new Intent(HipaaPixCamera.this, AddPhotoDetailsActivity.class);
-			intent.putExtra("BitmapImage", bitmapPicture);
+			Bundle bundle = new Bundle();
+            bundle.putByteArray("BitmapImage", arg0);
+            intent.putExtras(bundle);
+			//intent.putExtra("BitmapImage", bitmapPicture);
+			HipaaPixCamera.this.startActivity(intent);
 		}
 	};
 
@@ -161,5 +169,38 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onPictureTaken(byte[] data, Camera camera) {
+		
+		   Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+	        int rotation = 90;
+
+	        if (rotation != 0) {
+	            Bitmap oldBitmap = bitmap;
+
+	            Matrix matrix = new Matrix();
+	            matrix.postRotate(rotation);
+
+	            bitmap = Bitmap.createBitmap(
+	                bitmap,
+	                0,
+	                0,
+	                bitmap.getWidth(),
+	                bitmap.getHeight(),
+	                matrix,
+	                false
+	            );
+
+	            oldBitmap.recycle();
+	        }
+	       
+	        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+	        byte[] byteArray = stream.toByteArray();
+		myPictureCallback_JPG.onPictureTaken(byteArray, camera);
+		
 	}
 }

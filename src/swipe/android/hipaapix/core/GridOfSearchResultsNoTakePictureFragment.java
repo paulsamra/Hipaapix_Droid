@@ -49,7 +49,7 @@ public class GridOfSearchResultsNoTakePictureFragment extends GridFragment imple
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

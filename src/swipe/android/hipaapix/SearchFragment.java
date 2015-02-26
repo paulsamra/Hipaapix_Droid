@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.droidparts.widget.ClearableEditText;
+import org.json.JSONObject;
 
 import swipe.android.hipaapix.core.BaseFragment;
 import swipe.android.hipaapix.core.FragmentInfo;
@@ -41,7 +42,7 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 	PositionalLinkedMap<String, List<String>> listDataChild = new PositionalLinkedMap<String, List<String>>();
 
 	ExpandableListAdapter listAdapter;
-	ClearableEditText start_date;
+	ClearableEditText start_date, first_name_field, last_name_field;
 
 	public static final String DATEPICKER_START_TAG = "datepicker_start";
 	Calendar calendar;
@@ -52,7 +53,10 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.search_layout, container, false);
 		go = (Button) view.findViewById(R.id.submit);
-
+		first_name_field = (ClearableEditText) view
+				.findViewById(R.id.first_name_field);
+		last_name_field = (ClearableEditText) view
+				.findViewById(R.id.last_name_field);
 		calendar = Calendar.getInstance();
 		go.setOnClickListener(new OnClickListener() {
 			@Override
@@ -60,12 +64,17 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 				/* Go to next fragment in navigation stack */
 				// mActivity.pushFragments(AppConstants.TAB_A, new
 				// AppTabASecondFragment(),true,true);
-				/*Intent i = new Intent(SearchFragment.this.getActivity(),
-						SearchResultActivity.class);
-				SearchFragment.this.getActivity().startActivity(i);*/
-				mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A, new
-						PatientSearchListFragment(),true,true,null);
-				
+				/*
+				 * Intent i = new Intent(SearchFragment.this.getActivity(),
+				 * SearchResultActivity.class);
+				 * SearchFragment.this.getActivity().startActivity(i);
+				 */
+				try {
+					doSearch();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		datePickerDialog = DatePickerDialog.newInstance(this,
@@ -81,13 +90,12 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 				Bundle b = new Bundle();
-				
-		
-				List<String> children = listDataChild.getValue(groupPosition);	
+
+				List<String> children = listDataChild.getValue(groupPosition);
 				String value = children.get(childPosition);
 				b.putString(CategorySearchResultFragment.BUNDLE_TITLE_ID, value);
-				mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A, new
-						 CategorySearchResultFragment(),true,true,b);
+				mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
+						new CategorySearchResultFragment(), true, true, b);
 				return false;
 			}
 
@@ -121,13 +129,14 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 		}
 		start_date.setFocusable(false);
 		start_date.setOnClickListener(new OnClickListener() {
-		
+
 			@Override
-			public void onClick(View v) {	datePickerDialog.setVibrate(false);
-			datePickerDialog.setYearRange(1985, 2028);
-			datePickerDialog.show(SearchFragment.this.getActivity()
-					.getSupportFragmentManager(), DATEPICKER_START_TAG);
-				
+			public void onClick(View v) {
+				datePickerDialog.setVibrate(false);
+				datePickerDialog.setYearRange(1985, 2028);
+				datePickerDialog.show(SearchFragment.this.getActivity()
+						.getSupportFragmentManager(), DATEPICKER_START_TAG);
+
 			}
 		});
 
@@ -160,7 +169,63 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 			start_date.setText(total);
 			start_date.setTextColor(Color.BLACK);
 			start_date.setClearIconVisible(true);
-		} 
+		}
+
+	}
+
+	public void doSearch() throws Exception {
+		JSONObject fullBody = new JSONObject();
+		// buildling filter
+		JSONObject filter = new JSONObject();
+		JSONObject first_name = new JSONObject();
+		JSONObject last_name = new JSONObject();
+		JSONObject dob = new JSONObject();
+
+		if (!first_name_field.getText().toString().equals("")) {
+			first_name.put("value", first_name_field.getText().toString());
+			first_name.put("type", "eq");
+			first_name.put("case_sensitive", false);
+			filter.put("firstName", first_name);
+		
+		}
+		if (!last_name_field.getText().toString().equals("")) {
+			last_name.put("value", last_name_field.getText().toString());
+			last_name.put("type", "eq");
+			last_name.put("case_sensitive", false);
+			filter.put("lastName", last_name);
+		}
+
+	
+
+		if (!start_date.getText().toString().equals("")) {
+			String proper = FieldsParsingUtils.convertDisplayStringToProper(
+					start_date.getText().toString(), "");
+			Log.d("proper", proper);
+			dob.put("dob", proper);
+
+			filter.put("dob", dob);
+		}
+		
+		JSONObject sort = new JSONObject();
+		sort.put("lastName", "desc");
+		fullBody.put("sort", sort);
+		// /
+		fullBody.put("filter", filter);
+		fullBody.put("filter_type", "and");
+		fullBody.put("full_document", true);
+		fullBody.put("schema_id", SessionManager
+				.getInstance(this.getActivity()).getSchemaId());
+
+		String searchOptions = fullBody.toString();
+		String encoded = SessionManager.getInstance(this.getActivity())
+				.encode64(searchOptions);
+
+		// add this to bundle
+		Bundle b = new Bundle();
+		b.putString("options", encoded);
+		Log.d("Full body", searchOptions);
+	mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
+				new PatientSearchListFragment(), true, true, b);
 
 	}
 }

@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -28,8 +30,8 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 	public ImageAdapterNoTakePicture(Context ctx, List<String> urls) {
 		inflater = LayoutInflater.from(ctx);
 		this.imageUrls = urls;
-		options = HipaapixApplication.getDefaultOptions();
-	}
+	     options = ((HipaapixApplication)  ctx.getApplicationContext()).getDefaultOptions();
+		 }
 
 	@Override
 	public int getCount() {
@@ -54,7 +56,8 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 			view = inflater.inflate(R.layout.item_grid_image, parent, false);
 			holder = new ViewHolder();
 			assert view != null;
-			holder.imageView = (ImageView) view.findViewById(R.id.image);
+			 holder.imageView = new ImageViewAware((ImageView) view.findViewById(R.id.image), false);
+				
 			holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
 			view.setTag(holder);
 		} else {
@@ -64,7 +67,6 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 		// url = "drawable://" + R.drawable.take_photo_static;
 
 		String url = imageUrls.get(position);
-
 		ImageLoader.getInstance().displayImage(url, holder.imageView, options,
 				new SimpleImageLoadingListener() {
 					@Override
@@ -96,7 +98,7 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 		return view;
 	}
 	static class ViewHolder {
-		ImageView imageView;
+		ImageAware imageView;
 		ProgressBar progressBar;
 	}
 }

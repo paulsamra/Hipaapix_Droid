@@ -1,7 +1,11 @@
 package swipe.android.hipaapix;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.commons.codec.binary.Base64;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,51 +39,16 @@ public class SessionManager {
 	private static final String USER_ID = "USER_ID";
 
 	public static final float SEARCH_DEFAULT_NUMERIC = -1;
-	private static final String URL_BASE = "https://hipaapix";
+	private static final String URL_BASE = "https://api.truevault.com";
 
-	public String loginURL() {
-		return URL_BASE + "/login";
-	}
+	public static final String apiKey = "9b1528d9-801e-4a45-844f-9a8ecc01c32e";
+	public static final String accountID = "f7f034f7-be01-4480-bdd6-e144a942c969";
 
-	public String needsDetailsFollowersURL(String id) {
-		return URL_BASE + "/login";
-	}
+	private static final String VAULT_ID = "VAULT_ID";
+	private static final String LOGIN = "LOGIN";
 
-	public String needsDetailsOffersURL(String id) {
-		return URL_BASE + "/login";
-	}
-
-	public String needDetailsURL(String id) {
-		return URL_BASE + "/login";
-	}
-
-	public String exploreGroupsURL() {
-		return URL_BASE + "/groups";
-	}
-
-	public String needsDetailsBidsURL(String id) {
-		return URL_BASE + "/login";
-	}
-
-	public String needDetailsQueryURL(String location, String searchFilter) {
-		return URL_BASE + "/login";
-	}
-
-	public String exploreNeedsURL() {
-		return URL_BASE + "/explore";
-	}
-
-	public String exploreEventsURL() {
-		return URL_BASE + "/events";
-	}
-
-	public String createEventURL() {
-		return URL_BASE + "/event";
-	}
-
-	public String commentsURL(String id) {
-		return URL_BASE + "/need/" + id + "/comments";
-	}
+	private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+	private static final String SCHEMA_ID = "SCHEMA_ID";
 
 	private SessionManager(Context c) {
 		this._context = c;
@@ -93,42 +62,6 @@ public class SessionManager {
 		return instance;
 	}
 
-	public static final String EMAIL = "email";
-	public static final String PASSWORD = "password";
-	public static final String CATEGORY = "category";
-	public static final String LOGIN = "login";
-	private static final String TOKEN = "TOKEN";
-
-	public String getEmail() {
-		return pref.getString(EMAIL, this.DEFAULT_STRING);
-	}
-
-	public String getPassword() {
-		return pref.getString(PASSWORD, this.DEFAULT_STRING);
-	}
-
-	public String getCategory() {
-		return pref.getString(CATEGORY, this.DEFAULT_STRING);
-	}
-
-	public void setEmail(String email) {
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putString(EMAIL, email);
-		editor.commit();
-	}
-
-	public void setPassword(String password) {
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putString(PASSWORD, password);
-		editor.commit();
-	}
-
-	public void setCategory(String category) {
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putString(CATEGORY, category);
-		editor.commit();
-	}
-
 	public void resetTables() {
 		DatabaseCommandManager.deleteAllTables(HipaapixContentProvider
 				.getDBHelperInstance(_context).getWritableDatabase());
@@ -136,43 +69,133 @@ public class SessionManager {
 		DatabaseCommandManager.createAllTables(HipaapixContentProvider
 				.getDBHelperInstance(_context).getWritableDatabase());
 	}
+
 	public void setLogin(boolean login) {
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putBoolean(LOGIN, login);
 		editor.commit();
 	}
 
-	public boolean isLoggedIn(){
+	public boolean isLoggedIn() {
 		return pref.getBoolean(LOGIN, false);
 	}
+
 	public void clearUserPref() {
 		// destroy all shared preferences
 		SharedPreferences settings = _context.getSharedPreferences(
 				SessionManager.PREF_NAME, Context.MODE_PRIVATE);
 		settings.edit().clear().commit();
 	}
-	
+
+	private String encode64UserPass(String username, String password) {
+		return encode64(username + ":" + password);
+	}
+
+	public String encode64(String authString) {
+		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+		String authStringEnc = new String(authEncBytes);
+		return authStringEnc;
+	}
+
 	public Map<String, String> defaultSessionHeaders() {
 		Map<String, String> headers = new LinkedHashMap<String, String>();
-
-		headers.put("Accept", "application/json");
-		headers.put("Content-Type", "application/json");
-		headers.put("Cache-Control", "none");
-
-		if (getAuthToken() != null && getAuthToken() != "") {
-			Log.e("Token", getAuthToken());
-			headers.put("token", getAuthToken());
-		}
+		headers.put("Authorization",
+				"Basic " + encode64UserPass(this.apiKey, ""));
 		return headers;
 	}
-	
-	public String getAuthToken() {
-		return pref.getString(TOKEN, "");
-	}
-	public void setAuthToken(String token) {
 
-		editor.putString(TOKEN, token);
+	public String getLoginURL() {
+		return URL_BASE + "/v1/auth/login";
+	}
+
+	private static final String ownUserID = "9ab68049-9156-4676-bcd6-14a33621632e";
+
+	public String getUserURL() {
+		return URL_BASE + "/v1/users/" + getUserID() + "?verbose=1";
+	}
+	
+	public String searchVaultURL(String options){
+		return URL_BASE + "/v1/vaults/" + this.getVaultID() + "/?search_option=" + options;
+	}
+
+	public String decode64(String str) {
+		// Receiving side
+		byte[] data = android.util.Base64.decode(str,
+				android.util.Base64.DEFAULT);
+		String text = "";
+		try {
+			text = new String(data, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return text;
+
+	}
+
+	private static final String USERNAME = "USERNAME";
+	private static final String IS_LOGGED_IN = "IS_LOGGED_IN";
+
+	public void setIsLoggedIn(boolean showAbout) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(IS_LOGGED_IN, showAbout);
 		editor.commit();
 	}
-}
 
+	public void setUserID(String userID) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(USER_ID, userID);
+		editor.commit();
+	}
+
+	public void setAccessToken(String access_token) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(ACCESS_TOKEN, access_token);
+		editor.commit();
+	}
+
+	public void setSchemaID(String schemaID) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(SCHEMA_ID, schemaID);
+		editor.commit();
+	}
+
+	public void setVaultID(String valutID) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(VAULT_ID, valutID);
+		editor.commit();
+	}
+
+	public void setUserName(String username) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(USERNAME, username);
+		editor.commit();
+	}
+
+	public String getUserID() {
+		return pref.getString(USER_ID, "");
+	}
+
+	public String getAccessToken() {
+		return pref.getString(ACCESS_TOKEN, "");
+	}
+	public String getVaultID(){
+		return pref.getString(this.VAULT_ID, "");
+	}
+
+	public String getSchemaId() {
+		return pref.getString(SCHEMA_ID, "");
+	}
+
+	public String getUsername() {
+		return pref.getString(USERNAME, "");
+	}
+	public String getBlobURL(String blobID){
+		return URL_BASE + "/" + this.getVaultID() + "/blobs/" +blobID;
+		
+	}
+
+}

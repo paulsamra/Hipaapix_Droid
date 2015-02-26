@@ -2,9 +2,13 @@ package swipe.android.hipaapix.viewAdapters;
 
 import java.util.List;
 
+import org.json.JSONObject;
+
 import swipe.android.hipaapix.HipaapixApplication;
 import swipe.android.hipaapix.R;
+import swipe.android.hipaapix.SessionManager;
 import swipe.android.hipaapix.classes.patients.Patient;
+import swipe.android.hipaapix.json.searchvault.Document;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -19,11 +23,11 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class SearchResultsAdapter extends ArrayAdapter<Patient> {
+public class SearchResultsAdapter extends ArrayAdapter<Document> {
 
 
 	public SearchResultsAdapter(Context context, int textViewResourceId,
-			List<Patient> objects) {
+			List<Document> objects) {
 		super(context, textViewResourceId, objects);
 	}
 
@@ -41,8 +45,8 @@ public class SearchResultsAdapter extends ArrayAdapter<Patient> {
 					.findViewById(R.id.birthdate);
 			viewHolder.category = (TextView) updateView
 					.findViewById(R.id.category);
-			viewHolder.patient_preivew = (ImageView) updateView
-					.findViewById(R.id.patient_preivew);
+		/*	viewHolder.patient_preivew = (ImageView) updateView
+					.findViewById(R.id.patient_preivew);*/
 		
 			updateView.setTag(viewHolder);
 		} else {
@@ -50,11 +54,19 @@ public class SearchResultsAdapter extends ArrayAdapter<Patient> {
 			viewHolder = (ViewHolder) updateView.getTag();
 		}
 		
-		Patient patient = (Patient) getItem(position);
-		viewHolder.name.setText(patient.getName());
-		viewHolder.birthdate.setText(patient.getBirthdate());
-		viewHolder.category.setText(patient.getCategory());
-		String person_image_url = patient.getPatient_url();
+		Document patient = getItem(position);
+		String realPatient = SessionManager.getInstance(this.getContext()).decode64(patient.getDocument());
+		try{
+			JSONObject jsonPatient = new JSONObject(realPatient);
+		
+		viewHolder.name.setText(jsonPatient.getString("lastName") + ", "+jsonPatient.getString("firstName"));
+		viewHolder.birthdate.setText(jsonPatient.getString("dob"));
+		//viewHolder.category.setText(patient.getCategory());
+		viewHolder.category.setVisibility(View.GONE);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		/*String person_image_url = patient.getPatient_url();
 		ImageLoader.getInstance().displayImage(
 				person_image_url, viewHolder.patient_preivew,
 				HipaapixApplication.getDefaultOptions(),
@@ -81,12 +93,12 @@ public class SearchResultsAdapter extends ArrayAdapter<Patient> {
 							int current, int total) {
 					}
 				});
-
+*/
 		return updateView;
 	}
 
 	private static class ViewHolder {
 		public TextView name, birthdate, category;
-		public ImageView patient_preivew;
+		//public ImageView patient_preivew;
 	}
 }
