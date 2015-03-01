@@ -29,11 +29,14 @@ import android.os.Bundle;
 
 import com.edbert.library.database.DatabaseCommandManager;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -116,19 +119,28 @@ Application.ActivityLifecycleCallbacks {
 		 * .cacheOnDisk(false) .build();
 		 */
 		DisplayImageOptions defaultOptions = getDefaultOptions();
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				context).threadPriority(Thread.NORM_PRIORITY - 2)
-				.diskCacheFileNameGenerator(new Md5FileNameGenerator())
-				 .memoryCache(new UsingFreqLimitedMemoryCache(1024 * 1024 * 1024)) 
-				.diskCacheSize(1).defaultDisplayImageOptions(defaultOptions)
-				.memoryCacheSize(50000)
-				// 50 Mb
-	
-	            .imageDownloader(new SmartImageDownloader(context))
-				.tasksProcessingOrder(QueueProcessingType.LIFO)
-				// Remove for release app
-				.build();
-		ImageLoader.getInstance().init(config);
+		
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+        .memoryCacheExtraOptions(480, 800) // default = device screen dimensions
+        .diskCacheExtraOptions(480, 800, null)
+      
+        .threadPoolSize(3) // default
+        .threadPriority(Thread.NORM_PRIORITY - 1) // default
+        .tasksProcessingOrder(QueueProcessingType.FIFO) // default
+        .denyCacheImageMultipleSizesInMemory()
+      //     .memoryCacheSize(41943040)
+        .memoryCache(new LruMemoryCache(20 * 1024 * 1024))
+      
+        .memoryCacheSizePercentage(13) // default
+       
+    .defaultDisplayImageOptions(defaultOptions)
+	            .imageDownloader(new SmartImageDownloader(context)) // default
+      // default
+        .defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
+        .writeDebugLogs()
+        .build();
+	 ImageLoader.getInstance().init(config);
+
 	}
 
 	public  DisplayImageOptions getDefaultOptions() {
@@ -142,13 +154,21 @@ Application.ActivityLifecycleCallbacks {
 				.showImageOnLoading(Drawable.createFromXml(res, res.getXml(R.drawable.spinner)))
 				.bitmapConfig(Bitmap.Config.RGB_565);
 		*/
-		
-		DisplayImageOptions.Builder b = new DisplayImageOptions.Builder().cacheInMemory(true)
-
+	
+		DisplayImageOptions.Builder b = /*new DisplayImageOptions.Builder().cacheInMemory(true)
+				.resetViewBeforeLoading(true)	
 		.cacheOnDisk(false).considerExifParams(true)
 		.showImageOnLoading(R.color.white)
+		.considerExifParams(true)
+		.imageScaleType(ImageScaleType.EXACTLY)
 		//displayer(BitmapDisplayer displayer)
-		.bitmapConfig(Bitmap.Config.RGB_565);
+		.bitmapConfig(Bitmap.Config.RGB_565);*/
+				new DisplayImageOptions.Builder().cacheInMemory(true)
+				.cacheOnDisk(false)
+				.showImageOnLoading(android.R.color.transparent)
+				.considerExifParams(true)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				;
 
 		try {
 			b.showImageOnLoading(Drawable.createFromXml(res, res.getXml(R.drawable.spinner)));

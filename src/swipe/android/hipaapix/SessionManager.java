@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -39,11 +40,6 @@ public class SessionManager {
 	private static final String USER_ID = "USER_ID";
 
 	public static final float SEARCH_DEFAULT_NUMERIC = -1;
-	private static final String URL_BASE = "https://api.truevault.com";
-
-	public static final String apiKey = "9b1528d9-801e-4a45-844f-9a8ecc01c32e";
-	public static final String accountID = "f7f034f7-be01-4480-bdd6-e144a942c969";
-
 	private static final String VAULT_ID = "VAULT_ID";
 	private static final String LOGIN = "LOGIN";
 
@@ -87,51 +83,11 @@ public class SessionManager {
 		settings.edit().clear().commit();
 	}
 
-	private String encode64UserPass(String username, String password) {
-		return encode64(username + ":" + password);
-	}
 
-	public String encode64(String authString) {
-		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-		String authStringEnc = new String(authEncBytes);
-		return authStringEnc;
-	}
-
-	public Map<String, String> defaultSessionHeaders() {
-		Map<String, String> headers = new LinkedHashMap<String, String>();
-		headers.put("Authorization",
-				"Basic " + encode64UserPass(this.apiKey, ""));
-		return headers;
-	}
-
-	public String getLoginURL() {
-		return URL_BASE + "/v1/auth/login";
-	}
-
+	
 	private static final String ownUserID = "9ab68049-9156-4676-bcd6-14a33621632e";
 
-	public String getUserURL() {
-		return URL_BASE + "/v1/users/" + getUserID() + "?verbose=1";
-	}
 	
-	public String searchVaultURL(String options){
-		return URL_BASE + "/v1/vaults/" + this.getVaultID() + "/?search_option=" + options;
-	}
-
-	public String decode64(String str) {
-		// Receiving side
-		byte[] data = android.util.Base64.decode(str,
-				android.util.Base64.DEFAULT);
-		String text = "";
-		try {
-			text = new String(data, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return text;
-
-	}
 
 	private static final String USERNAME = "USERNAME";
 	private static final String IS_LOGGED_IN = "IS_LOGGED_IN";
@@ -193,9 +149,6 @@ public class SessionManager {
 	public String getUsername() {
 		return pref.getString(USERNAME, "");
 	}
-	public String getBlobURL(String blobID){
-		return URL_BASE + "/" + this.getVaultID() + "/blobs/" +blobID;
-		
-	}
+
 
 }

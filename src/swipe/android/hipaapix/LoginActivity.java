@@ -129,10 +129,9 @@ public class LoginActivity extends HipaaActivity implements
 			SessionManager.getInstance(this).setUserID(
 					String.valueOf(loginResponse.getUser().getUser_id()));
 
-			String url = SessionManager.getInstance(this).getUserURL();
+			String url = APIManager.getUserURL(this);
 
-			Map<String, String> headers = SessionManager.getInstance(this)
-					.defaultSessionHeaders();
+			Map<String, String> headers = APIManager.defaultSessionHeaders();
 
 			new GetDataWebTask<GetUserDataResponse>(this,
 					GetUserDataResponse.class).execute(url,
@@ -155,7 +154,7 @@ public class LoginActivity extends HipaaActivity implements
 		if (!response.isValid()) {
 			displayError(response);
 		} else {
-			String decoded = SessionManager.getInstance(this).decode64(
+			String decoded = APIManager.decode64(
 					response.getUser().getAttributes());
 			JSONObject decodedJSON;
 			try {
@@ -191,7 +190,7 @@ public class LoginActivity extends HipaaActivity implements
 		}
 
 		Map<String, String> formHeaders = new LinkedHashMap<String, String>();
-		formHeaders.put("account_id", SessionManager.accountID);
+		formHeaders.put("account_id", APIManager.accountID);
 		if (HipaapixApplication.DEVELOPER_MODE) {
 			formHeaders.put("username", "testuser1");
 			formHeaders.put("password", "12345678");
@@ -201,7 +200,7 @@ public class LoginActivity extends HipaaActivity implements
 			formHeaders.put("password", passwordET.getText().toString());
 		}
 		new PostDataWebTask<LoginResponse>(this, this, LoginResponse.class,
-				true, true).execute(SessionManager.getInstance(this)
+				true, true).execute(APIManager
 				.getLoginURL(), "", MapUtils.mapToString(formHeaders));
 
 	}

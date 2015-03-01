@@ -2,7 +2,10 @@ package swipe.android.hipaapix.classes.patients;
 
 import java.util.ArrayList;
 
-public class Patient {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Patient implements Parcelable {
 	public String getPatient_url() {
 		return patient_url;
 	}
@@ -37,13 +40,59 @@ public class Patient {
 		this.category = category;
 	}
 
-
 	public Patient(String patient_url, String name, String birthdate,
-			String category) {
+			String category, String blob_url) {
 		super();
 		this.patient_url = patient_url;
 		this.name = name;
 		this.birthdate = birthdate;
 		this.category = category;
+		this.blob_url = blob_url;
+	}
+
+	public String getBlob_url() {
+		return blob_url;
+	}
+
+	public void setBlob_url(String blob_url) {
+		this.blob_url = blob_url;
+	}
+
+	String blob_url;
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeStringArray(new String[] { this.patient_url, this.name,
+				this.birthdate, this.category, this.blob_url });
+
+	}
+
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+		public Patient createFromParcel(Parcel in) {
+			return new Patient(in);
+		}
+
+		public Patient[] newArray(int size) {
+			return new Patient[size];
+		}
+	};
+
+	public Patient(Parcel in) {
+
+		String[] data = new String[5];
+
+		in.readStringArray(data);
+
+		patient_url = data[0];
+		name = data[1];
+		birthdate = data[2];
+		category = data[3];
+		blob_url = data[4];
 	}
 }

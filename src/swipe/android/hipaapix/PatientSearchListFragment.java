@@ -1,6 +1,7 @@
 package swipe.android.hipaapix;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import swipe.android.hipaapix.core.BaseFragment;
 import swipe.android.hipaapix.core.GridOfSearchResultsWithTakePictureActivity;
 import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
 import swipe.android.hipaapix.json.patientsResponse.PatientsResultsResponse;
-import swipe.android.hipaapix.json.searchvault.Document;
+import swipe.android.hipaapix.json.searchvault.EncodedDocument;
 import swipe.android.hipaapix.json.searchvault.SearchVaultResponse;
 import swipe.android.hipaapix.json.users.GetUserDataResponse;
 import swipe.android.hipaapix.viewAdapters.SearchResultsAdapter;
@@ -52,7 +53,7 @@ public class PatientSearchListFragment extends BaseFragment implements
 		View view = inflater.inflate(R.layout.list_layout, container, false);
 		ListView lView = (ListView) view.findViewById(android.R.id.list);
 		this.resultsListAdapter = new SearchResultsAdapter(this.getActivity(),
-				R.id.name, new ArrayList<Document>());
+				R.id.name, new ArrayList<EncodedDocument>());
 		lView.setAdapter(resultsListAdapter);
 		lView.setOnItemClickListener(this);
 		getActivity().getActionBar().setDisplayOptions(
@@ -71,12 +72,14 @@ public class PatientSearchListFragment extends BaseFragment implements
 		setHasOptionsMenu(true);
 
 
-		String url = SessionManager.getInstance(this.getActivity())
-				.searchVaultURL(options);
+		String url =APIManager
+				.searchVaultURL(
+						this.getActivity(),options);
 
-		Map<String, String> headers = SessionManager.getInstance(
-				this.getActivity()).defaultSessionHeaders();
+		Map<String, String> headers = APIManager.defaultSessionHeaders();
 
+		
+	
 		new GetDataWebTask<SearchVaultResponse>(this.getActivity(),
 				(AsyncTaskCompleteListener<SearchVaultResponse>) this,
 				SearchVaultResponse.class).execute(url,
@@ -92,7 +95,7 @@ public class PatientSearchListFragment extends BaseFragment implements
 		} else {
 			SearchResultsAdapter adapter = (SearchResultsAdapter) this.resultsListAdapter;
 			adapter.clear();
-			for (Document d : result.getData().getDocuments()) {
+			for (EncodedDocument d : result.getData().getDocuments()) {
 				adapter.add(d);
 			}
 			adapter.notifyDataSetChanged();
@@ -112,9 +115,9 @@ public class PatientSearchListFragment extends BaseFragment implements
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Bundle b = new Bundle();
-		Document patient = resultsListAdapter.getItem(position);
-	
-		String realPatient = SessionManager.getInstance(this.getActivity()).decode64(patient.getDocument());
+		EncodedDocument patient = resultsListAdapter.getItem(position);
+
+		String realPatient = APIManager.decode64(patient.getDocument());
 	
 		b.putString(PatientGridOfImagesFragment.BUNDLE_TITLE_ID, realPatient);
 		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,

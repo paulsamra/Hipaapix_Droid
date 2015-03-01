@@ -1,20 +1,20 @@
-package swipe.android.hipaapix.json.searchvault;
+package swipe.android.hipaapix.json;
 
 import java.util.ArrayList;
 
-public class Data{
+import swipe.android.hipaapix.json.searchvault.EncodedDocument;
+
+public class DocumentsResponse extends TrueVaultResponse {
+
 	public ArrayList<EncodedDocument> getDocuments() {
 		return documents;
 	}
+
 	public void setDocuments(ArrayList<EncodedDocument> documents) {
 		this.documents = documents;
 	}
-	public Info getInfo() {
-		return info;
-	}
-	public void setInfo(Info info) {
-		this.info = info;
-	}
+
 	ArrayList<EncodedDocument> documents;
-	Info info;
+
+
 }

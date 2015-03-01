@@ -2,6 +2,7 @@ package swipe.android.hipaapix;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.edbert.library.network.SocketOperator;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
@@ -31,11 +33,20 @@ public InputStream getStream(String imageUri, Object extra) throws IOException {
     switch (Scheme.ofUri(imageUri)) {
         case HTTP:
         case HTTPS:
+       // 	Log.d("BEGIN STREAM", imageUri);
           //  KLog.e(TAG, "getStream: " + extra.toString(), KLog.Severity.WTF);
 		InputStream s = null;
 		try {
-			s = SocketOperator.getInstance(null).getResponse(imageUri, SessionManager.getInstance(this.context).defaultSessionHeaders());
-	
+			s = SocketOperator.getInstance(null).getResponse(imageUri, APIManager.defaultSessionHeaders());
+		//String string = SocketOperator.getInstance(null).httpGetRequest(imageUri, SessionManager.getInstance(this.context).defaultSessionHeaders());
+		//
+			//s = IOUtils.toInputStream(string, "UTF-8");
+	//	s = new ByteArrayInputStream(string.getBytes());
+			 		
+					//new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+					
+					
+			
 	
           /* HttpURLConnection conn = createConnection(imageUri, extra);
             conn.setRequestMethod("POST");

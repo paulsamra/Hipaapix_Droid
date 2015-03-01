@@ -14,14 +14,6 @@ public class PatientsResultsResponse implements JsonResponseInterface{
 		return false;
 	}
 	// temporary
-	public ArrayList<Patient> getPatients() {
-		ArrayList<Patient> patients = new ArrayList<Patient>();
-		for (int i = 0; i < 5; i++) {
-			patients.add(new Patient(
-					"http://pldh.net/media/dreamworld/196.png", "Bob",
-					"05/29/1969", "cateogry"));
-		}
-		return patients;
-	}
+	
 
 }

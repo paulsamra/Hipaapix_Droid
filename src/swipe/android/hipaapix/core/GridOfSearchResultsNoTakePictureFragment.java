@@ -9,6 +9,7 @@ import swipe.android.hipaapix.GridFragment;
 import swipe.android.hipaapix.R;
 import swipe.android.hipaapix.R.id;
 import swipe.android.hipaapix.R.layout;
+import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.viewAdapters.ImageAdapterNoTakePicture;
 import swipe.android.hipaapix.viewAdapters.ImageAdapterWithTakePicture;
 
@@ -31,16 +32,17 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 public class GridOfSearchResultsNoTakePictureFragment extends GridFragment implements OnItemClickListener{
 	public static final int INDEX = 1;
-	protected List<String> imageUrls = Arrays.asList(Constants.IMAGES);
-
+	protected ArrayList<Patient> imageUrls = new ArrayList<Patient>();//Arrays.asList(Constants.IMAGES);
+	protected ImageAdapterNoTakePicture adapter;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.grid_layout, container, false);
 
 		listView = (GridView) view.findViewById(R.id.grid);
-		((GridView) listView).setAdapter(new ImageAdapterNoTakePicture(this
-				.getActivity(), imageUrls));
+		adapter = new ImageAdapterNoTakePicture(this
+				.getActivity(), imageUrls);
+		((GridView) listView).setAdapter(adapter);
 
 		listView.setOnItemClickListener(this);
 		return view;

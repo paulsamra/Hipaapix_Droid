@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class AddPhotoDetailsActivity extends Activity {
+public class AddPhotoDetailsActivity extends HipaaActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

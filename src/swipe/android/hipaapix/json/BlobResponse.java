@@ -1,7 +1,6 @@
-package swipe.android.hipaapix.json.searchvault;
+package swipe.android.hipaapix.json;
 
-public class Document
-{
+public class BlobResponse extends TrueVaultResponse {
 	public String getCategory() {
 		return category;
 	}

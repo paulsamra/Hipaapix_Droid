@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import swipe.android.hipaapix.APIManager;
 import swipe.android.hipaapix.HipaapixApplication;
 import swipe.android.hipaapix.R;
 import swipe.android.hipaapix.SessionManager;
 import swipe.android.hipaapix.classes.patients.Patient;
-import swipe.android.hipaapix.json.searchvault.Document;
+import swipe.android.hipaapix.json.searchvault.EncodedDocument;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -23,11 +24,11 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class SearchResultsAdapter extends ArrayAdapter<Document> {
+public class SearchResultsAdapter extends ArrayAdapter<EncodedDocument> {
 
 
 	public SearchResultsAdapter(Context context, int textViewResourceId,
-			List<Document> objects) {
+			List<EncodedDocument> objects) {
 		super(context, textViewResourceId, objects);
 	}
 
@@ -54,8 +55,8 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
 			viewHolder = (ViewHolder) updateView.getTag();
 		}
 		
-		Document patient = getItem(position);
-		String realPatient = SessionManager.getInstance(this.getContext()).decode64(patient.getDocument());
+		EncodedDocument patient = getItem(position);
+		String realPatient = APIManager.decode64(patient.getDocument());
 		try{
 			JSONObject jsonPatient = new JSONObject(realPatient);
 		

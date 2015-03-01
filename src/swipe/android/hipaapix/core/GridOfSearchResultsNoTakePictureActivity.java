@@ -1,5 +1,6 @@
 package swipe.android.hipaapix.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import swipe.android.hipaapix.GridActivity;
 import swipe.android.hipaapix.R;
 import swipe.android.hipaapix.R.id;
 import swipe.android.hipaapix.R.layout;
+import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.viewAdapters.ImageAdapterNoTakePicture;
 import swipe.android.hipaapix.viewAdapters.ImageAdapterWithTakePicture;
 import android.graphics.Bitmap;
@@ -29,7 +31,8 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 public class GridOfSearchResultsNoTakePictureActivity extends GridActivity implements OnItemClickListener{
 	public static final int INDEX = 1;
-	List<String> imageUrls = Arrays.asList(Constants.IMAGES);
+	//List<String> imageUrls = Arrays.asList(Constants.IMAGES);
+	protected ArrayList<Patient> imageUrls = new ArrayList<Patient>();//Arrays.asList(Constants.IMAGES);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,8 @@ public class GridOfSearchResultsNoTakePictureActivity extends GridActivity imple
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		// TODO Auto-generated method stub
+	//	// TODO Auto-generated method stub
+	
 		
 	}
 

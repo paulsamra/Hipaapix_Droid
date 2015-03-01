@@ -5,15 +5,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.droidparts.widget.ClearableEditText;
 import org.json.JSONObject;
 
+import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.core.BaseFragment;
 import swipe.android.hipaapix.core.FragmentInfo;
 import swipe.android.hipaapix.core.GridOfSearchResultsNoTakePictureFragment;
 import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
+import swipe.android.hipaapix.json.UploadPatientResponse;
+import swipe.android.hipaapix.json.searchvaultImage.SearchVaultImageResponse;
 import swipe.android.hipaapix.viewAdapters.ExpandableListAdapter;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,12 +37,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.Switch;
 
 import com.edbert.library.containers.PositionalLinkedMap;
+import com.edbert.library.network.AsyncTaskCompleteListener;
+import com.edbert.library.network.GetDataWebTask;
+import com.edbert.library.network.PostDataWebTask;
+import com.edbert.library.utils.MapUtils;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
 
-public class SearchFragment extends BaseFragment implements OnDateSetListener {
+public class SearchFragment extends BaseFragment implements OnDateSetListener,
+		AsyncTaskCompleteListener<UploadPatientResponse> {
 	Button go;
 	ExpandableListView expListView;
 	List<String> listDataHeader;
@@ -47,12 +60,14 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 	public static final String DATEPICKER_START_TAG = "datepicker_start";
 	Calendar calendar;
 	DatePickerDialog datePickerDialog;
+	Switch newPatient;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.search_layout, container, false);
 		go = (Button) view.findViewById(R.id.submit);
+		newPatient = (Switch) view.findViewById(R.id.new_patient_switch);
 		first_name_field = (ClearableEditText) view
 				.findViewById(R.id.first_name_field);
 		last_name_field = (ClearableEditText) view
@@ -61,16 +76,12 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 		go.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				/* Go to next fragment in navigation stack */
-				// mActivity.pushFragments(AppConstants.TAB_A, new
-				// AppTabASecondFragment(),true,true);
-				/*
-				 * Intent i = new Intent(SearchFragment.this.getActivity(),
-				 * SearchResultActivity.class);
-				 * SearchFragment.this.getActivity().startActivity(i);
-				 */
 				try {
-					doSearch();
+					if (!newPatient.isChecked()) {
+						doSearch();
+					} else {
+						doCreate();
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -173,59 +184,91 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener {
 
 	}
 
+	public void doCreate() throws Exception {
+		if (first_name_field.getText().toString().equals("")
+				|| last_name_field.getText().toString().equals("")
+				|| start_date.getText().toString().equals("")) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					this.getActivity());
+
+			builder.setMessage(
+					"Please make sure you enter a first name, last name, and date of birth for new patients")
+					.setTitle("Missing Info")
+					.setCancelable(true)
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.dismiss();
+								}
+							});
+			AlertDialog alert = builder.create();
+			alert.show();
+			return;
+		}
+		String start_date_string = FieldsParsingUtils
+				.convertDisplayStringToProper(start_date.getText().toString(),
+						"");
+		String document = APIManager.createPatientDocument(this.getActivity(),
+				new LocalPatient(first_name_field.getText().toString(),
+						last_name_field.getText().toString(),
+						start_date_string, ""));
+		Map<String, String> headers = APIManager.defaultSessionHeaders();
+		Map<String, String> form = new HashMap<String, String>();
+		form.put("document", document);
+		form.put("schema_id", SessionManager.getInstance(this.getActivity())
+				.getSchemaId());
+
+		String url = APIManager.createUserDocumentURL(this.getActivity());
+
+		new PostDataWebTask<UploadPatientResponse>(
+				(AsyncTaskCompleteListener<UploadPatientResponse>) this,
+				this.getActivity(), UploadPatientResponse.class, true, true)
+				.execute(url, MapUtils.mapToString(headers),
+						MapUtils.mapToString(form));
+	}
+
 	public void doSearch() throws Exception {
-		JSONObject fullBody = new JSONObject();
-		// buildling filter
-		JSONObject filter = new JSONObject();
-		JSONObject first_name = new JSONObject();
-		JSONObject last_name = new JSONObject();
-		JSONObject dob = new JSONObject();
 
-		if (!first_name_field.getText().toString().equals("")) {
-			first_name.put("value", first_name_field.getText().toString());
-			first_name.put("type", "eq");
-			first_name.put("case_sensitive", false);
-			filter.put("firstName", first_name);
-		
-		}
-		if (!last_name_field.getText().toString().equals("")) {
-			last_name.put("value", last_name_field.getText().toString());
-			last_name.put("type", "eq");
-			last_name.put("case_sensitive", false);
-			filter.put("lastName", last_name);
-		}
+		String encoded = APIManager.searchOptions(this.getActivity(),
+				first_name_field, last_name_field, start_date);
 
-	
-
-		if (!start_date.getText().toString().equals("")) {
-			String proper = FieldsParsingUtils.convertDisplayStringToProper(
-					start_date.getText().toString(), "");
-			Log.d("proper", proper);
-			dob.put("dob", proper);
-
-			filter.put("dob", dob);
-		}
-		
-		JSONObject sort = new JSONObject();
-		sort.put("lastName", "desc");
-		fullBody.put("sort", sort);
-		// /
-		fullBody.put("filter", filter);
-		fullBody.put("filter_type", "and");
-		fullBody.put("full_document", true);
-		fullBody.put("schema_id", SessionManager
-				.getInstance(this.getActivity()).getSchemaId());
-
-		String searchOptions = fullBody.toString();
-		String encoded = SessionManager.getInstance(this.getActivity())
-				.encode64(searchOptions);
-
-		// add this to bundle
 		Bundle b = new Bundle();
 		b.putString("options", encoded);
-		Log.d("Full body", searchOptions);
-	mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
+		// Log.d("Full body", searchOptions);
+		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
 				new PatientSearchListFragment(), true, true, b);
 
+	}
+
+	@Override
+	public void onTaskComplete(UploadPatientResponse result) {
+		if (result != null && result.isValid()) {
+			try {
+				doSearch();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+
+			String loginTitle = "Error";
+			String message = "Failed to add patient";
+			String try_again = this.getString(R.string.try_again);
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					this.getActivity());
+			builder.setMessage(message)
+					.setTitle(loginTitle)
+					.setCancelable(false)
+					.setPositiveButton(try_again,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.dismiss();
+								}
+							});
+
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
 	}
 }
