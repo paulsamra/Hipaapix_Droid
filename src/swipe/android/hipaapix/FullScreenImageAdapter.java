@@ -62,7 +62,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
 		patient = (TextView) viewLayout.findViewById(R.id.patient);
 		category = (TextView) viewLayout.findViewById(R.id.category_img);
 		patient.setText(_imagePaths.get(position).getName());
-		patient.setText(_imagePaths.get(position).getCategory());
+		category.setText(_imagePaths.get(position).getCategory());
 		DisplayImageOptions options = ((HipaapixApplication) _activity
 				.getApplication()).getDefaultOptions();
 
@@ -76,9 +76,6 @@ public class FullScreenImageAdapter extends PagerAdapter {
 				ImageLoader.getInstance().getMemoryCache());
 		boolean cacheFound = !memCache.isEmpty();
 
-		for (String s : memCache) {
-			Log.d("MEM", s);
-		}
 
 		/*
 		 * Toast.makeText(this._activity, "memCache:" + cacheFound,

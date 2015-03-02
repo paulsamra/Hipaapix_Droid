@@ -99,9 +99,7 @@ public class PatientSearchListFragment extends BaseFragment implements
 				adapter.add(d);
 			}
 			adapter.notifyDataSetChanged();
-		/*	for(Document d : result.getData().getDocuments()){
-				Log.d("Document" , SessionManager.getInstance(this.getActivity()).decode64(d.getDocument()));
-			}*/
+		
 		}
 	}
 

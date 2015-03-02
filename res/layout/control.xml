@@ -26,7 +26,6 @@
             android:orientation="horizontal" >
 
             <ImageView
-        
                 android:id="@+id/take_picture_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="86dip"
@@ -37,17 +36,19 @@
                 android:paddingTop="12dip"
                 android:src="@drawable/button_take_photo_not_selected" />
 
-            <ImageView
+            <TextView
+                android:id="@+id/cancel_text"
                 android:layout_width="wrap_content"
-                android:layout_height="86dip"
-                android:layout_centerVertical="true"
+                android:layout_height="86dp"
                 android:layout_alignParentRight="true"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="30dip"
-                android:src="@drawable/button_rotate_camera_not_selected" />
+                android:layout_centerVertical="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="35dp"
+                android:text="Cancel"
+                android:textSize="32sp"
+                android:textStyle="bold" />
         </RelativeLayout>
-
     </FrameLayout>
 
     <FrameLayout
@@ -72,45 +73,61 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
-            <ImageView
+            <RelativeLayout
+                android:id="@+id/flash_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="44dip"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_centerInParent="true"
-                android:paddingBottom="5dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="12dip"
-                android:src="@drawable/button_flash_off" />
+                android:layout_height="wrap_content" >
 
-            
-            
-             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="44dip"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="5dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="12dip"
-                android:src="@drawable/take_photo_label" />
-            
-            
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="44dip"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_centerInParent="true"
-                android:paddingBottom="5dip"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:paddingTop="12dip"
-                android:id="@+id/switch_front_back_camera"
-                android:src="@drawable/front_back_camera_selector" />
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/flash_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dip"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="5dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip"
+                    android:paddingTop="12dip"
+                    android:src="@drawable/photo_flash_logo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/flash_icon"
+                    android:text="Off"
+                    android:id="@+id/flash_toggle"
+                    android:textColor="#e43f2c"
+                    android:textSize="24sp"
+                    android:textStyle="bold" >
+                </TextView>
+</RelativeLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dip"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:paddingBottom="5dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip"
+                    android:paddingTop="12dip"
+                    android:src="@drawable/take_photo_label" />
+
+                <ImageView
+                    android:id="@+id/switch_front_back_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:paddingBottom="5dip"
+                    android:paddingLeft="5dip"
+                    android:paddingRight="5dip"
+                    android:paddingTop="12dip"
+                    android:src="@drawable/front_back_camera_selector" />
+            </RelativeLayout>
     </FrameLayout>
 
 </RelativeLayout>

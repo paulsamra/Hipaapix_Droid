@@ -149,6 +149,16 @@ public class SessionManager {
 	public String getUsername() {
 		return pref.getString(USERNAME, "");
 	}
+public static final String IMAGE_SCHEMA_ID = "Image_schema_id";
+	public void setImageSchemaId(String patient_image_schema) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(IMAGE_SCHEMA_ID, patient_image_schema);
+		editor.commit();
+	}
+	public String getImageSchemaId(){
+		return pref.getString(IMAGE_SCHEMA_ID, "");
+	}
 
 
 }

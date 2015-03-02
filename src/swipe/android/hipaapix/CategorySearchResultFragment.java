@@ -7,8 +7,11 @@ import org.json.JSONObject;
 
 import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.core.GridOfSearchResultsNoTakePictureFragment;
+import swipe.android.hipaapix.json.searchvault.Document;
+import swipe.android.hipaapix.json.searchvault.EncodedDocument;
 import swipe.android.hipaapix.json.searchvault.SearchVaultResponse;
 import swipe.android.hipaapix.json.searchvaultImage.SearchVaultImageResponse;
+import swipe.android.hipaapix.viewAdapters.SearchResultsAdapter;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,10 +25,11 @@ import android.widget.AdapterView;
 import com.edbert.library.network.AsyncTaskCompleteListener;
 import com.edbert.library.network.GetDataWebTask;
 import com.edbert.library.utils.MapUtils;
+import com.google.gson.Gson;
 
 public class CategorySearchResultFragment extends
 		GridOfSearchResultsNoTakePictureFragment implements
-		AsyncTaskCompleteListener<SearchVaultImageResponse> {
+		AsyncTaskCompleteListener<SearchVaultResponse> {
 	public static final String BUNDLE_TITLE_ID = "title";
 
 	@Override
@@ -47,18 +51,17 @@ public class CategorySearchResultFragment extends
 
 		try {
 
-			String options =
-			APIManager.categorySearchOptions(this.getActivity(), s);// searchOptions(s);
+			String options = APIManager.categorySearchOptions(
+					this.getActivity(), s);// searchOptions(s);
 
-			Log.d("Cateogry", APIManager.decode64(options));
+			// Log.d("Cateogry", APIManager.decode64(options));
 			String url = APIManager.searchVaultURL(this.getActivity(), options);
 
 			Map<String, String> headers = APIManager.defaultSessionHeaders();
 
-		
-			new GetDataWebTask<SearchVaultImageResponse>(this.getActivity(),
-					(AsyncTaskCompleteListener<SearchVaultImageResponse>) this,
-					SearchVaultImageResponse.class).execute(url,
+			new GetDataWebTask<SearchVaultResponse>(this.getActivity(),
+					(AsyncTaskCompleteListener<SearchVaultResponse>) this,
+					SearchVaultResponse.class).execute(url,
 					MapUtils.mapToString(headers));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,8 +86,34 @@ public class CategorySearchResultFragment extends
 		startActivity(i);
 	}
 
-	@Override
-	public void onTaskComplete(SearchVaultImageResponse result) {
+	public void setUpDocmentsDecodeQuery(SearchVaultResponse result) {
 
+		for (EncodedDocument doc : result.getData().getDocuments()) {
+			String decode = APIManager.decode64(doc.getDocument());
+
+			Gson gson3 = new Gson();
+			Document parsedResponse = gson3.fromJson(decode, Document.class);
+
+			String url = APIManager.downloadRawBlobUrl(this.getActivity(),
+					parsedResponse.getBlob_id());
+
+			super.imageUrls.add(new Patient("", "", "", parsedResponse
+					.getCategory(), url, parsedResponse.getPatient_id()));
+		}
+		adapter.notifyDataSetChanged();
+		adapter.notifyDataSetInvalidated();
+	}
+
+	public void loadImagesIntoAdapter() {
+
+	}
+
+	@Override
+	public void onTaskComplete(SearchVaultResponse result) {
+		if (!result.isValid()) {
+
+		} else {
+			setUpDocmentsDecodeQuery(result);
+		}
 	}
 }

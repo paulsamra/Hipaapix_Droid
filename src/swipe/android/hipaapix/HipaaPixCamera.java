@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
@@ -22,14 +23,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, Camera.PictureCallback  {
+public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
+		Camera.PictureCallback {
 
 	Camera camera;
 	SurfaceView surfaceView;
 	SurfaceHolder surfaceHolder;
 	boolean previewing = false;
 	LayoutInflater controlInflater = null;
+	RelativeLayout flashLayout;
+	TextView flash;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -73,11 +79,37 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, 
 			}
 		});
 
+		TextView cancelText = (TextView) findViewById(R.id.cancel_text);
+		cancelText.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				HipaaPixCamera.this.finish();
+			}
+		});
+		flash = (TextView) findViewById(R.id.flash_toggle);
+		flashLayout = (RelativeLayout) findViewById(R.id.flash_layout);
+		flashLayout.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				setFlash();
+			}
+		});
 	}
 
+	public void setFlash() {
+		if (flashIsOn) {
+			flash.setText("Off");
+		} else {
+			flash.setText("On");
+		}
+		flashIsOn = !flashIsOn;
+		reloadCamera();
+	}
+
+	boolean flashIsOn = false;
+
 	public void takePicture() {
-		camera.takePicture(myShutterCallback, myPictureCallback_RAW,
-				this);
+		camera.takePicture(myShutterCallback, myPictureCallback_RAW, this);
 	}
 
 	ShutterCallback myShutterCallback = new ShutterCallback() {
@@ -101,14 +133,17 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, 
 		@Override
 		public void onPictureTaken(byte[] arg0, Camera arg1) {
 			// TODO Auto-generated method stub
-			/*Bitmap bitmapPicture = BitmapFactory.decodeByteArray(arg0, 0,
-					arg0.length);*/
-			//Log.d("hi","hi");
-			Intent intent = new Intent(HipaaPixCamera.this, AddPhotoDetailsActivity.class);
+			/*
+			 * Bitmap bitmapPicture = BitmapFactory.decodeByteArray(arg0, 0,
+			 * arg0.length);
+			 */
+			// Log.d("hi","hi");
+			Intent intent = new Intent(HipaaPixCamera.this,
+					AddPhotoDetailsActivity.class);
 			Bundle bundle = new Bundle();
-            bundle.putByteArray("BitmapImage", arg0);
-            intent.putExtras(bundle);
-			//intent.putExtra("BitmapImage", bitmapPicture);
+			bundle.putByteArray("BitmapImage", arg0);
+			intent.putExtras(bundle);
+			// intent.putExtra("BitmapImage", bitmapPicture);
 			HipaaPixCamera.this.startActivity(intent);
 		}
 	};
@@ -145,17 +180,42 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, 
 	int currentCameraId = 0;
 
 	public void switchFrontBackCamera() {
+		if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK)
+			currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+		else
+			currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+		reloadCamera();
+	}
+
+	public void onPause() {
+		super.onPause();
+		if(camera != null)
+		{Parameters p = camera.getParameters();
+		camera.setParameters(p);
+		p.setFlashMode(Parameters.FLASH_MODE_OFF);
+
+		camera.setParameters(p);}
+	}
+	public void onResume(){
+		super.onResume();
+		if(camera != null)
+		{Parameters p = camera.getParameters();
+		camera.setParameters(p);
+			if (this.flashIsOn) {
+				p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+			} else {
+				p.setFlashMode(Parameters.FLASH_MODE_OFF);
+			}
+			camera.setParameters(p);
+		}
+	}
+
+	public void reloadCamera() {
 		if (camera != null) {
 			camera.stopPreview();
 			camera.release();
 			camera = null;
 		}
-
-		// swap the id of the camera to be used
-		if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK)
-			currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-		else
-			currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
 		try {
 			camera = Camera.open(currentCameraId);
@@ -163,6 +223,14 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, 
 			camera.setDisplayOrientation(90);
 
 			camera.setPreviewDisplay(surfaceHolder);
+
+			Parameters p = camera.getParameters();
+			if (this.flashIsOn) {
+				p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+			} else {
+				p.setFlashMode(Parameters.FLASH_MODE_OFF);
+			}
+			camera.setParameters(p);
 
 			camera.startPreview();
 
@@ -173,34 +241,27 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback, 
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
-		
-		   Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
-	        int rotation = 90;
+		Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
-	        if (rotation != 0) {
-	            Bitmap oldBitmap = bitmap;
+		int rotation = 90;
 
-	            Matrix matrix = new Matrix();
-	            matrix.postRotate(rotation);
+		if (rotation != 0) {
+			Bitmap oldBitmap = bitmap;
 
-	            bitmap = Bitmap.createBitmap(
-	                bitmap,
-	                0,
-	                0,
-	                bitmap.getWidth(),
-	                bitmap.getHeight(),
-	                matrix,
-	                false
-	            );
+			Matrix matrix = new Matrix();
+			matrix.postRotate(rotation);
 
-	            oldBitmap.recycle();
-	        }
-	       
-	        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-	        byte[] byteArray = stream.toByteArray();
+			bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+					bitmap.getHeight(), matrix, false);
+
+			oldBitmap.recycle();
+		}
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		byte[] byteArray = stream.toByteArray();
 		myPictureCallback_JPG.onPictureTaken(byteArray, camera);
-		
+
 	}
 }

@@ -89,7 +89,6 @@ public class PatientGridOfImagesFragment extends
 		String url = APIManager.getDocumentsURL(this.getActivity(), documents);
 		Map<String, String> headers = APIManager.defaultSessionHeaders();
 
-		Log.d("URL", url);
 		
 		new GetDataWebTask<DocumentsResponse>(
 				(AsyncTaskCompleteListener<DocumentsResponse>) this,this.getActivity(),

@@ -1,6 +1,8 @@
 package swipe.android.hipaapix.viewAdapters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.android.volley.Request.Method;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.edbert.library.network.AsyncTaskCompleteListener;
 import com.edbert.library.network.GetDataWebTask;
 import com.edbert.library.network.SocketOperator;
@@ -45,6 +52,7 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 	List<Patient> imageUrls;
 	DisplayImageOptions options;
 	Context ctx;
+	public static final String TAG = ImageAdapterNoTakePicture.class.getName();
 
 	public ImageAdapterNoTakePicture(Context ctx, List<Patient> urls) {
 		inflater = LayoutInflater.from(ctx);
@@ -70,7 +78,7 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		final ViewHolder holder;
 		View view = convertView;
 		if (view == null) {
@@ -90,9 +98,58 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 		holder.progressBar.setProgress(0);
 		holder.progressBar.setVisibility(View.VISIBLE);
 		String url = imageUrls.get(position).getBlob_url();
-		/*ImageLoader loader = ImageLoader.getInstance();
-		loader.init(((HipaapixApplication) this.ctx.getApplicationContext())
-				.initImageLoader(this.ctx.getApplicationContext()));*/
+
+		String patient_id = imageUrls.get(position).getPatient_id();
+		if (patient_id != null && !patient_id.equals("")) {
+			String patient_url = APIManager.getDocumentsURL(this.ctx,
+					imageUrls.get(position).getPatient_id());
+		
+			StringRequest strReq = new StringRequest(Method.GET,
+					patient_url, new Response.Listener<String>() {
+
+						@Override
+						public void onResponse(String response) {
+					String decoded = APIManager.decode64(response);
+					try {
+						JSONObject patient = new JSONObject(decoded);
+						String firstName = patient.getString("firstName");
+						String lastName = patient.getString("lastName");
+						String dob = patient.getString("dob");
+						imageUrls.get(position).setName(firstName + " " + lastName);
+						imageUrls.get(position).setBirthdate(dob);
+						Log.d("finish loading", "loading");
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+
+						}
+					}, new Response.ErrorListener() {
+
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							
+						}
+					}){
+				@Override
+				public HashMap<String, String> getHeaders() {
+					HashMap<String, String> params = APIManager
+							.defaultSessionHeaders();
+					
+					return params;
+				}
+			};
+			
+			String tagOfQueue = ImageAdapterNoTakePicture.TAG + " " + position;
+			HipaapixApplication.getInstance().addToRequestQueue(strReq,
+					tagOfQueue);
+		}
+		/*
+		 * ImageLoader loader = ImageLoader.getInstance();
+		 * loader.init(((HipaapixApplication) this.ctx.getApplicationContext())
+		 * .initImageLoader(this.ctx.getApplicationContext()));
+		 */
 		ImageLoader.getInstance().displayImage(url, holder.imageView, options,
 				new SimpleImageLoadingListener() {
 					@Override

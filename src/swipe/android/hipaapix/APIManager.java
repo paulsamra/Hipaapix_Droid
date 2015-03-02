@@ -1,6 +1,7 @@
 package swipe.android.hipaapix;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -80,7 +81,7 @@ public class APIManager {
 		fullBody.put("filter", filter);
 		fullBody.put("filter_type", "or");
 		fullBody.put("full_document", true);
-		fullBody.put("schema_id", SessionManager.getInstance(ctx).getSchemaId());
+		fullBody.put("schema_id", SessionManager.getInstance(ctx).getImageSchemaId());
 
 		String searchOptions = fullBody.toString();
 	
@@ -137,10 +138,12 @@ public class APIManager {
 	}
 
 	public static String getUserURL(Context ctx) {
-		return URL_BASE + "/v1/users/"
-				+ SessionManager.getInstance(ctx).getUserID() + "?verbose=1";
+		return getUserURL(ctx,SessionManager.getInstance(ctx).getUserID());
 	}
-
+	public static String getUserURL(Context ctx, String id) {
+		return URL_BASE + "/v1/users/"
+				+ id + "?verbose=1";
+	}
 	public static String searchVaultURL(Context ctx, String options) {
 		return URL_BASE + "/v1/vaults/"
 				+ SessionManager.getInstance(ctx).getVaultID()
@@ -150,8 +153,8 @@ public class APIManager {
 		return URL_BASE + "/v1/vaults/" +  SessionManager.getInstance(ctx).getVaultID() + 
 				"/documents";
 	}
-	public static Map<String, String> defaultSessionHeaders() {
-		Map<String, String> headers = new LinkedHashMap<String, String>();
+	public static HashMap<String, String> defaultSessionHeaders() {
+		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("Authorization", "Basic " + encode64UserPass(apiKey, ""));
 		return headers;
 	}

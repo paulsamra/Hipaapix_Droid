@@ -32,6 +32,15 @@ public class Patient implements Parcelable {
 
 	String patient_url, name, birthdate, category;
 
+	String patient_id;
+	public String getPatient_id() {
+		return patient_id;
+	}
+
+	public void setPatient_id(String patient_id) {
+		this.patient_id = patient_id;
+	}
+
 	public String getCategory() {
 		return category;
 	}
@@ -48,8 +57,18 @@ public class Patient implements Parcelable {
 		this.birthdate = birthdate;
 		this.category = category;
 		this.blob_url = blob_url;
+		this.patient_id = "";
 	}
-
+	public Patient(String patient_url, String name, String birthdate,
+			String category, String blob_url, String patient_id) {
+		super();
+		this.patient_url = patient_url;
+		this.name = name;
+		this.birthdate = birthdate;
+		this.category = category;
+		this.blob_url = blob_url;
+		this.patient_id = patient_id;
+	}
 	public String getBlob_url() {
 		return blob_url;
 	}
@@ -69,7 +88,7 @@ public class Patient implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringArray(new String[] { this.patient_url, this.name,
-				this.birthdate, this.category, this.blob_url });
+				this.birthdate, this.category, this.blob_url,this.patient_id });
 
 	}
 
@@ -85,7 +104,7 @@ public class Patient implements Parcelable {
 
 	public Patient(Parcel in) {
 
-		String[] data = new String[5];
+		String[] data = new String[6];
 
 		in.readStringArray(data);
 
@@ -94,5 +113,6 @@ public class Patient implements Parcelable {
 		birthdate = data[2];
 		category = data[3];
 		blob_url = data[4];
+		patient_id = data[5];
 	}
 }

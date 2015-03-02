@@ -166,6 +166,7 @@ public class LoginActivity extends HipaaActivity implements
 				String vault_id = decodedJSON.getString("vault_id");
 				SessionManager.getInstance(this).setSchemaID(patient_schema);
 				SessionManager.getInstance(this).setVaultID(vault_id);
+				SessionManager.getInstance(this).setImageSchemaId(patient_image_schema);
 
 				this.goToNextActivity();
 			} catch (JSONException e) {

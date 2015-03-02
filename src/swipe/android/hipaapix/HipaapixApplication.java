@@ -26,7 +26,11 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.edbert.library.database.DatabaseCommandManager;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -87,9 +91,8 @@ Application.ActivityLifecycleCallbacks {
 		 */
 		super.registerActivityLifecycleCallbacks(this);
 
-		Intent intent = new Intent(this, PayPalService.class);
-		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-		startService(intent);
+		mInstance = this;
+	
 	}
 
 	public static PayPalPayment generatePayObject(double price, String item,
@@ -253,6 +256,37 @@ Application.ActivityLifecycleCallbacks {
 	public void onActivityDestroyed(Activity activity) {
 		// TODO Auto-generated method stub
 
+	}
+	public static final String TAG = HipaapixApplication.class
+			.getSimpleName();
+
+	private static HipaapixApplication mInstance;
+	private RequestQueue mRequestQueue;
+	public static synchronized HipaapixApplication getInstance() {
+		return mInstance;
+	}
+	public RequestQueue getRequestQueue() {
+		if (mRequestQueue == null) {
+			mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+		}
+
+		return mRequestQueue;
+	}
+	public <T> void addToRequestQueue(Request<T> req, String tag) {
+		// set the default tag if tag is empty
+		req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+		getRequestQueue().add(req);
+	}
+
+	public <T> void addToRequestQueue(Request<T> req) {
+		req.setTag(TAG);
+		getRequestQueue().add(req);
+	}
+
+	public void cancelPendingRequests(Object tag) {
+		if (mRequestQueue != null) {
+			mRequestQueue.cancelAll(tag);
+		}
 	}
 
 }
