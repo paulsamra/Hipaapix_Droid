@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import swipe.android.hipaapix.json.login.LoginResponse;
 import swipe.android.hipaapix.json.users.GetUserDataResponse;
+import swipe.android.hipaapix.services.LogoutService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -154,8 +155,8 @@ public class LoginActivity extends HipaaActivity implements
 		if (!response.isValid()) {
 			displayError(response);
 		} else {
-			String decoded = APIManager.decode64(
-					response.getUser().getAttributes());
+			String decoded = APIManager.decode64(response.getUser()
+					.getAttributes());
 			JSONObject decodedJSON;
 			try {
 				decodedJSON = new JSONObject(decoded);
@@ -166,7 +167,8 @@ public class LoginActivity extends HipaaActivity implements
 				String vault_id = decodedJSON.getString("vault_id");
 				SessionManager.getInstance(this).setSchemaID(patient_schema);
 				SessionManager.getInstance(this).setVaultID(vault_id);
-				SessionManager.getInstance(this).setImageSchemaId(patient_image_schema);
+				SessionManager.getInstance(this).setImageSchemaId(
+						patient_image_schema);
 
 				this.goToNextActivity();
 			} catch (JSONException e) {
@@ -201,8 +203,8 @@ public class LoginActivity extends HipaaActivity implements
 			formHeaders.put("password", passwordET.getText().toString());
 		}
 		new PostDataWebTask<LoginResponse>(this, this, LoginResponse.class,
-				true, true).execute(APIManager
-				.getLoginURL(), "", MapUtils.mapToString(formHeaders));
+				true, true).execute(APIManager.getLoginURL(), "",
+				MapUtils.mapToString(formHeaders));
 
 	}
 
@@ -216,6 +218,22 @@ public class LoginActivity extends HipaaActivity implements
 
 		}
 
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if (LogoutService.timer != null)
+			LogoutService.timer.cancel();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if (LogoutService.timer != null)
+			LogoutService.timer.cancel();
 	}
 
 }

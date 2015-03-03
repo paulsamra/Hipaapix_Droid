@@ -1,5 +1,6 @@
 package swipe.android.hipaapix;
 
+import swipe.android.hipaapix.services.LogoutService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.preference.PreferenceFragment;
@@ -21,11 +22,14 @@ public class SettingsFragment extends PreferenceFragment {
 		addPreferencesFromResource(R.xml.preferences);
 
 	}
-@Override
-public void onResume(){
-	super.onResume();
-	((HomeActivity) this.getActivity()).setupActionBar();
-}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		((HomeActivity) this.getActivity()).setupActionBar();
+
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -39,10 +43,13 @@ public void onResume(){
 		logout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-			//	Log.d("Logging out", "loggingout");
-				Intent i = new Intent(SettingsFragment.this.getActivity(), LoginActivity.class);
+				// Log.d("Logging out", "loggingout");
+				/*Intent i = new Intent(SettingsFragment.this.getActivity(),
+						LoginActivity.class);
 				startActivity(i);
-				SettingsFragment.this.getActivity().finish();
+				SettingsFragment.this.getActivity().finish();*/
+				((HipaapixApplication) SettingsFragment.this.getActivity().getApplication())
+				.logout(false);
 			}
 		});
 

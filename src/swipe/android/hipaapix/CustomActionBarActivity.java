@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.throrinstudio.android.library.widgets.dashboard.DashBoardElement.OnClickListener;
 import com.throrinstudio.android.library.widgets.dashboard.DashBoardLayout;
 
-public abstract class CustomActionBarActivity extends ActionBarActivity {
+public abstract class CustomActionBarActivity extends HipaaActivity {
 
 	public void setupActionBar() {
 		getActionBar().setHomeButtonEnabled(true);
