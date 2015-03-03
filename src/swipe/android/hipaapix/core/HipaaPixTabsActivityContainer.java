@@ -185,6 +185,9 @@ public abstract class HipaaPixTabsActivityContainer extends
 
 	@Override
 	public void onBackPressed() {
+		if(!(mStacks.get(mCurrentTab).lastElement().getFragment() instanceof BaseFragment)){
+			return;
+		}
 		if (((BaseFragment) mStacks.get(mCurrentTab).lastElement().getFragment())
 				.onBackPressed() == false) {
 			/*

@@ -21,7 +21,11 @@ public class SettingsFragment extends PreferenceFragment {
 		addPreferencesFromResource(R.xml.preferences);
 
 	}
-
+@Override
+public void onResume(){
+	super.onResume();
+	((HomeActivity) this.getActivity()).setupActionBar();
+}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
