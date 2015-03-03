@@ -145,6 +145,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			intent.putExtras(bundle);
 			// intent.putExtra("BitmapImage", bitmapPicture);
 			HipaaPixCamera.this.startActivity(intent);
+			HipaaPixCamera.this.finish();
 		}
 	};
 
@@ -189,18 +190,20 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 
 	public void onPause() {
 		super.onPause();
-		if(camera != null)
-		{Parameters p = camera.getParameters();
-		camera.setParameters(p);
-		p.setFlashMode(Parameters.FLASH_MODE_OFF);
+		if (camera != null) {
+			Parameters p = camera.getParameters();
+			camera.setParameters(p);
+			p.setFlashMode(Parameters.FLASH_MODE_OFF);
 
-		camera.setParameters(p);}
+			camera.setParameters(p);
+		}
 	}
-	public void onResume(){
+
+	public void onResume() {
 		super.onResume();
-		if(camera != null)
-		{Parameters p = camera.getParameters();
-		camera.setParameters(p);
+		if (camera != null) {
+			Parameters p = camera.getParameters();
+			camera.setParameters(p);
 			if (this.flashIsOn) {
 				p.setFlashMode(Parameters.FLASH_MODE_TORCH);
 			} else {
@@ -230,6 +233,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			} else {
 				p.setFlashMode(Parameters.FLASH_MODE_OFF);
 			}
+			p.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 			camera.setParameters(p);
 
 			camera.startPreview();

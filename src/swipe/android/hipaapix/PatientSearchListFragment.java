@@ -114,9 +114,10 @@ public class PatientSearchListFragment extends BaseFragment implements
 			long id) {
 		Bundle b = new Bundle();
 		EncodedDocument patient = resultsListAdapter.getItem(position);
-
 		String realPatient = APIManager.decode64(patient.getDocument());
-	
+		SessionManager.getInstance(this.getActivity()).setPatientID(patient.getDocument_id());
+
+		
 		b.putString(PatientGridOfImagesFragment.BUNDLE_TITLE_ID, realPatient);
 		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,
 				new PatientGridOfImagesFragment(), true, true, b);

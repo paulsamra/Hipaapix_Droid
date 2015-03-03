@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import swipe.android.hipaapix.classes.patients.Patient;
@@ -45,7 +47,7 @@ public class APIManager {
 			Log.d("DATE", proper);
 			dob.put("value", proper);
 			dob.put("type", "eq");
-			filter.put("dob",dob);
+			filter.put("dob", dob);
 		}
 
 		JSONObject sort = new JSONObject();
@@ -58,37 +60,35 @@ public class APIManager {
 		fullBody.put("schema_id", SessionManager.getInstance(ctx).getSchemaId());
 
 		String searchOptions = fullBody.toString();
-	
+
 		String encoded = encode64(searchOptions);
 		return encoded;
 	}
 
 	public static String categorySearchOptions(Context ctx, String s)
 			throws Exception {
-		
-		
+
 		JSONObject fullBody = new JSONObject();
 		// buildling filter
 		JSONObject filter = new JSONObject();
 		JSONObject category = new JSONObject();
 
-			category.put("value", s);
-			category.put("type", "eq");
-			category.put("case_sensitive", false);
-			filter.put("category", category);
+		category.put("value", s);
+		category.put("type", "eq");
+		category.put("case_sensitive", false);
+		filter.put("category", category);
 
 		// /
 		fullBody.put("filter", filter);
 		fullBody.put("filter_type", "or");
 		fullBody.put("full_document", true);
-		fullBody.put("schema_id", SessionManager.getInstance(ctx).getImageSchemaId());
+		fullBody.put("schema_id", SessionManager.getInstance(ctx)
+				.getImageSchemaId());
 
 		String searchOptions = fullBody.toString();
-	
+
 		String encoded = encode64(searchOptions);
 		return encoded;
-		
-	
 
 	}
 
@@ -138,21 +138,30 @@ public class APIManager {
 	}
 
 	public static String getUserURL(Context ctx) {
-		return getUserURL(ctx,SessionManager.getInstance(ctx).getUserID());
+		return getUserURL(ctx, SessionManager.getInstance(ctx).getUserID());
 	}
+
 	public static String getUserURL(Context ctx, String id) {
-		return URL_BASE + "/v1/users/"
-				+ id + "?verbose=1";
+		return URL_BASE + "/v1/users/" + id + "?verbose=1";
 	}
+
 	public static String searchVaultURL(Context ctx, String options) {
 		return URL_BASE + "/v1/vaults/"
 				+ SessionManager.getInstance(ctx).getVaultID()
 				+ "/?search_option=" + options;
 	}
+
 	public static String createUserDocumentURL(Context ctx) {
-		return URL_BASE + "/v1/vaults/" +  SessionManager.getInstance(ctx).getVaultID() + 
-				"/documents";
+		return URL_BASE + "/v1/vaults/"
+				+ SessionManager.getInstance(ctx).getVaultID() + "/documents";
 	}
+
+	public static String updateUserDocumentURL(Context ctx) {
+		return URL_BASE + "/v1/vaults/"
+				+ SessionManager.getInstance(ctx).getVaultID() + "/documents/"
+				+ SessionManager.getInstance(ctx).getPatientId();
+	}
+
 	public static HashMap<String, String> defaultSessionHeaders() {
 		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("Authorization", "Basic " + encode64UserPass(apiKey, ""));
@@ -204,10 +213,46 @@ public class APIManager {
 	}
 
 	public static String createPatientDocument(Context ctx, LocalPatient patient) {
-		// return "";
-		// JSONObject body = new JSONObject();
 		String body = patient.toJSON();
 		return encode64(body);
+	}
+
+	public static String createPatientImageDocument(Context ctx,
+			LocalPatientImage patient) {
+		String body = patient.toJSON();
+		return encode64(body);
+	}
+
+	public static String uploadImageURL(Context ctx) {
+		return URL_BASE + "/v1/vaults/"
+				+ SessionManager.getInstance(ctx).getVaultID() + "/blobs";
+
+	}
+
+	public static String updatePatientDocumentString(Context ctx,
+			String documentID) {
+		JSONObject body = new JSONObject();
+		try {
+			body.put("firstName", SessionManager.getInstance(ctx)
+					.getPatientFirstName());
+
+			body.put("lastName", SessionManager.getInstance(ctx)
+					.getPatientLastName());
+			body.put("dob", SessionManager.getInstance(ctx).getPatientDOB());
+
+			JSONArray documents = new JSONArray();
+
+			String[] docs = SessionManager.getInstance(ctx).getPatientImages();
+			for(int i = 0 ; i < docs.length; i++){
+				documents.put(docs[i]);
+			}
+			documents.put(documentID);
+			body.put("images", documents);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return encode64(body.toString());
 	}
 
 }

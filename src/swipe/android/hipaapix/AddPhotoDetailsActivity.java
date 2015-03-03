@@ -1,15 +1,31 @@
 package swipe.android.hipaapix;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.droidparts.widget.ClearableEditText;
 
+import swipe.android.hipaapix.json.TrueVaultResponse;
+import swipe.android.hipaapix.json.UpdateDocumentResponse;
+import swipe.android.hipaapix.json.UploadImageResponse;
+import swipe.android.hipaapix.json.UploadPatientResponse;
+
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,7 +35,17 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class AddPhotoDetailsActivity extends HipaaActivity {
+import com.edbert.library.network.AsyncTaskCompleteListener;
+import com.edbert.library.network.PostDataWebTask;
+import com.edbert.library.network.PutDataWebTask;
+import com.edbert.library.utils.MapUtils;
+
+public class AddPhotoDetailsActivity extends HipaaActivity implements
+		AsyncTaskCompleteListener {
+	byte[] photo;
+	Bitmap bitmap;
+	ClearableEditText notes;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,23 +58,22 @@ public class AddPhotoDetailsActivity extends HipaaActivity {
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
 		getActionBar().setDisplayShowHomeEnabled(false);
-		
-		
+
 		ab.setTitle("Photo Details");
 
-		
 		Bundle extras = getIntent().getExtras();
-		byte[] photo = extras.getByteArray("BitmapImage");
-		Bitmap bitmap  = BitmapFactory.decodeByteArray (photo, 0, photo.length);
-		//Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
+		photo = extras.getByteArray("BitmapImage");
+		bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+		// Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
 		ImageView imagePreview = (ImageView) findViewById(R.id.image_preview);
 		imagePreview.setImageBitmap(bitmap);
 
-		ClearableEditText notes = (ClearableEditText) findViewById(R.id.notes_field);
+		notes = (ClearableEditText) findViewById(R.id.notes_field);
 
 		categoryText = (TextView) findViewById(R.id.choose_category);
 		TableRow chooseCategoryRow = (TableRow) findViewById(R.id.category_table_row);
 		setUpCategory(chooseCategoryRow, R.array.category);
+		
 	}
 
 	TextView categoryText;
@@ -81,9 +106,10 @@ public class AddPhotoDetailsActivity extends HipaaActivity {
 		});
 	}
 
-	public void enableDisableDone() {
-		menu.getItem(0).setEnabled(hasChosenCategory);
+	public void enableDisableDone( ) {
 
+		menu.getItem(0).setEnabled(hasChosenCategory);
+		
 	}
 
 	Menu menu;
@@ -94,6 +120,8 @@ public class AddPhotoDetailsActivity extends HipaaActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.add_photo_details_menu, menu);
 		this.menu = menu;
+
+		enableDisableDone();
 		return true;
 	}
 
@@ -102,7 +130,8 @@ public class AddPhotoDetailsActivity extends HipaaActivity {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.done_item:
-			uploadImage();
+		
+			uploadImage(false);
 			return true;
 
 		default:
@@ -110,7 +139,146 @@ public class AddPhotoDetailsActivity extends HipaaActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	public void uploadImage(){
-		
+
+	@Override
+	public void onBackPressed() {
+		// code here to show dialog
+		// super.onBackPressed(); // optional depending on your needs
+		Intent intent = new Intent(this, HipaaPixCamera.class);
+		this.startActivity(intent);
+		this.finish();
+	}
+
+	public void uploadImage(boolean thumbnail) {
+		// send multipart form request
+		String url = APIManager.uploadImageURL(this);
+		HashMap<String, String> params = APIManager.defaultSessionHeaders();
+
+		/*
+		 * String tempPath = Environment.getExternalStorageDirectory()
+		 * .toString();
+		 */
+		try {
+			File outputDir = this.getCacheDir();
+			File tempFile = File.createTempFile("temp", "jpeg", outputDir);
+			OutputStream fOut = null;
+			// File tempFile = new File(tempPath, "temp.jpg");
+
+			fOut = new FileOutputStream(tempFile);
+			int compression = 70;
+			if (thumbnail) {
+				compression = 30;
+			}
+			bitmap.compress(Bitmap.CompressFormat.JPEG, compression, fOut);
+			fOut.close();
+			fOut.flush();
+
+			new PostDataWebTask<UploadImageResponse>(this,
+					UploadImageResponse.class, tempFile, true).execute(url,
+					MapUtils.mapToString(params), null);
+		}
+
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	Uri selectedImageUri;
+	String imgPath;
+
+	public String getImagePath() {
+		return imgPath;
+	}
+
+	String blobID = null, thumbnailID = null;
+
+	void postNonThumbnail(UploadImageResponse result) {
+		// String url = APIManager.createUserDocumentURL(this);
+		blobID = result.getBlob_id();
+
+		uploadImage(true);
+	}
+
+	void postThumbnail(UploadImageResponse result) {
+		thumbnailID = result.getBlob_id();
+		LocalPatientImage image = new LocalPatientImage(categoryText.getText()
+				.toString(), blobID, thumbnailID, /*
+												 * SessionManager.getInstance(
+												 * this).getPatientId()
+												 */"", notes.getText()
+				.toString());
+		String document = APIManager.createPatientImageDocument(this, image);
+
+		Map<String, String> headers = APIManager.defaultSessionHeaders();
+		Map<String, String> form = new HashMap<String, String>();
+		form.put("document", document);
+		form.put("schema_id", SessionManager.getInstance(this).getSchemaId());
+
+		String url = APIManager.createUserDocumentURL(this);
+
+		new PostDataWebTask<UploadPatientResponse>(
+				(AsyncTaskCompleteListener) this, this,
+				UploadPatientResponse.class, true, true).execute(url,
+				MapUtils.mapToString(headers), MapUtils.mapToString(form));
+	}
+
+	public void postPatientResponse(UploadPatientResponse result) {
+		String documentID = result.getDocument_id();
+		String url = APIManager.updateUserDocumentURL(this);
+		Map<String, String> headers = APIManager.defaultSessionHeaders();
+		Map<String, String> form = new HashMap<String, String>();
+		String document = APIManager.updatePatientDocumentString(this,
+				documentID);
+		SessionManager.getInstance(this).setNewDoucment(documentID);
+		form.put("document", document);
+		new PutDataWebTask<UpdateDocumentResponse>(this, this,
+				UpdateDocumentResponse.class,true, true).execute(url,
+				MapUtils.mapToString(headers), MapUtils.mapToString(form));
+	}
+
+	@Override
+	public void onTaskComplete(Object result) {
+		if (result == null) {
+			displayNetworkError();
+			blobID = null;
+			thumbnailID = null;
+			return;
+		}
+		TrueVaultResponse tvResult = (TrueVaultResponse) result;
+
+		if (!tvResult.isValid()) {
+			super.displayError(tvResult);
+			blobID = null;
+			thumbnailID = null;
+		} else if (result instanceof UploadImageResponse && blobID == null) {
+			postNonThumbnail((UploadImageResponse) result);
+		} else if (result instanceof UploadImageResponse && blobID != null) {
+			postThumbnail((UploadImageResponse) result);
+		} else if (result instanceof UploadPatientResponse) {
+			postPatientResponse((UploadPatientResponse) result);
+		} else {
+
+			String loginTitle = "Success";
+
+			String try_again = "OK";
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(try_again)
+					.setTitle(loginTitle)
+					.setCancelable(false)
+					.setPositiveButton(try_again,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.dismiss();
+									  SessionManager.getInstance(AddPhotoDetailsActivity.this).setIsDataOutdated(true);
+									AddPhotoDetailsActivity.this.finish();
+								}
+							});
+
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+
 	}
 }

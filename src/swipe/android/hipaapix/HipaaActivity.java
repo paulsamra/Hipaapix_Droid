@@ -3,6 +3,7 @@ package swipe.android.hipaapix;
 import swipe.android.hipaapix.json.TrueVaultResponse;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 
 public abstract class HipaaActivity extends Activity{
@@ -26,5 +27,9 @@ public abstract class HipaaActivity extends Activity{
 
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	public void displayNetworkError(){
+		HipaapixApplication.getInstance().displayNetworkNotAvailableDialog(this);
 	}
 }

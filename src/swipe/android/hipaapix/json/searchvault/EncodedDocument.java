@@ -1,6 +1,10 @@
 package swipe.android.hipaapix.json.searchvault;
 
-public class EncodedDocument{
+public class EncodedDocument {
+	public EncodedDocument(String s) {
+		document = s;
+	}
+
 	String document, document_id;
 
 	public String getDocument() {

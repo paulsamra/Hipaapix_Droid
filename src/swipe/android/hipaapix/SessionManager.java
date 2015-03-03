@@ -2,11 +2,18 @@ package swipe.android.hipaapix;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
-
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -83,11 +90,7 @@ public class SessionManager {
 		settings.edit().clear().commit();
 	}
 
-
-	
 	private static final String ownUserID = "9ab68049-9156-4676-bcd6-14a33621632e";
-
-	
 
 	private static final String USERNAME = "USERNAME";
 	private static final String IS_LOGGED_IN = "IS_LOGGED_IN";
@@ -138,7 +141,8 @@ public class SessionManager {
 	public String getAccessToken() {
 		return pref.getString(ACCESS_TOKEN, "");
 	}
-	public String getVaultID(){
+
+	public String getVaultID() {
 		return pref.getString(this.VAULT_ID, "");
 	}
 
@@ -149,16 +153,115 @@ public class SessionManager {
 	public String getUsername() {
 		return pref.getString(USERNAME, "");
 	}
-public static final String IMAGE_SCHEMA_ID = "Image_schema_id";
+
+	public static final String IMAGE_SCHEMA_ID = "Image_schema_id";
+
 	public void setImageSchemaId(String patient_image_schema) {
 
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putString(IMAGE_SCHEMA_ID, patient_image_schema);
 		editor.commit();
 	}
-	public String getImageSchemaId(){
+
+	public String getImageSchemaId() {
 		return pref.getString(IMAGE_SCHEMA_ID, "");
 	}
 
+	public static final String PATIENT_ID = "patient_id";
 
+	public String getPatientId() {
+		return pref.getString(PATIENT_ID, "");
+	}
+
+	public void setPatientID(String patientID) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(PATIENT_ID, patientID);
+		editor.commit();
+	}
+
+	public static final String FIRST_NAME = "FIRST_NAME";
+	public static final String LAST_NAME = "LAST_NAME";
+	public static final String DATE_OF_BIRTH = "DATE_OF_BIRTH";
+
+	public void setPatientFirstName(String firstName) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(FIRST_NAME, firstName);
+		editor.commit();
+	}
+
+	public void setPatientLastName(String lastName) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(LAST_NAME, lastName);
+		editor.commit();
+
+	}
+
+	public void setPatientDateOfBirth(String dateofbirth) {
+
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(DATE_OF_BIRTH, dateofbirth);
+		editor.commit();
+
+	}
+
+	public String getPatientFirstName() {
+		return pref.getString(FIRST_NAME, "");
+	}
+
+	public String getPatientLastName() {
+		return pref.getString(LAST_NAME, "");
+	}
+
+	public String getPatientDOB() {
+		return pref.getString(DATE_OF_BIRTH, "");
+	}
+
+	public static final String PATIENT_IMAGES = "PATIENT_IMAGES";
+
+	public void setPatientImages(JSONArray arr) {
+
+
+		Set<String> mySet = new LinkedHashSet<String>();
+		try {
+
+			for (int i = 0; i < arr.length(); i++) {
+				mySet.add(arr.getString(i));
+				Log.d("Adding", arr.getString(i));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putStringSet(PATIENT_IMAGES, mySet);
+		editor.commit();
+	}
+
+	public String[] getPatientImages() {
+		Set<String> set = pref.getStringSet(PATIENT_IMAGES,
+				new LinkedHashSet<String>());
+		return set.toArray(new String[set.size()]);
+
+
+	}
+private static final String IS_OUTDATED = "isOutdated";
+	public void setIsDataOutdated(boolean b) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(IS_OUTDATED, b);
+		editor.commit();
+	}
+	public boolean isOutdated(){
+		return pref.getBoolean(IS_OUTDATED, false);
+	}
+public static final String NEW_DOC = "NEW_DOC";
+	public String getNewDocument() {
+return pref.getString(NEW_DOC, null);
+	}
+	public void setNewDoucment(String s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(NEW_DOC, s);
+		editor.commit();
+	}
 }

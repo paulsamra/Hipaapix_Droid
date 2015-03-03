@@ -24,6 +24,7 @@ import swipe.android.hipaapix.json.BlobResponse;
 import swipe.android.hipaapix.json.DocumentsResponse;
 import swipe.android.hipaapix.json.searchvault.Document;
 import swipe.android.hipaapix.json.searchvaultImage.SearchVaultImageResponse;
+import swipe.android.hipaapix.viewAdapters.ImageAdapterNoTakePicture;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,7 @@ public class PatientGridOfImagesFragment extends
 		GridOfSearchResultsNoTakePictureFragment implements
 		AsyncTaskCompleteListener<DocumentsResponse> {
 	public static final String BUNDLE_TITLE_ID = "title";
+	String bundle = "";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,9 +59,9 @@ public class PatientGridOfImagesFragment extends
 		ab.setHomeButtonEnabled(true);
 
 		Bundle extras = this.getArguments();
-
+		bundle = extras.getString(BUNDLE_TITLE_ID);
 		try {
-			initialize(extras.getString(BUNDLE_TITLE_ID));
+			initialize(bundle, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,12 +70,28 @@ public class PatientGridOfImagesFragment extends
 		setHasOptionsMenu(true);
 		return v;
 	}
+
 	String name;
-	private void initialize(String s) throws Exception {
+
+	private void initialize(String s, String newDocument) throws Exception {
+		imageUrls.clear();
+		adapter = new ImageAdapterNoTakePicture(this.getActivity(), imageUrls);
+		((GridView) listView).setAdapter(adapter);
+
 		JSONObject patient = new JSONObject(s);
 		String firstName = patient.getString("firstName");
 		String lastName = patient.getString("lastName");
 		JSONArray images = patient.getJSONArray("images");
+		if (newDocument != null)
+			images.put(newDocument);
+		String dob = patient.getString("dob");
+		SessionManager.getInstance(this.getActivity()).setPatientFirstName(
+				firstName);
+		SessionManager.getInstance(this.getActivity()).setPatientLastName(
+				lastName);
+		SessionManager.getInstance(this.getActivity()).setPatientDateOfBirth(
+				dob);
+		SessionManager.getInstance(this.getActivity()).setPatientImages(images);
 		name = firstName + " " + lastName;
 		String documents = "";
 		for (int i = 0; i < images.length(); i++) {
@@ -89,15 +107,31 @@ public class PatientGridOfImagesFragment extends
 		String url = APIManager.getDocumentsURL(this.getActivity(), documents);
 		Map<String, String> headers = APIManager.defaultSessionHeaders();
 
-		
 		new GetDataWebTask<DocumentsResponse>(
-				(AsyncTaskCompleteListener<DocumentsResponse>) this,this.getActivity(),
-				DocumentsResponse.class, true).execute(url,
+				(AsyncTaskCompleteListener<DocumentsResponse>) this,
+				this.getActivity(), DocumentsResponse.class, true).execute(url,
 				MapUtils.mapToString(headers));
-		
 
 		ActionBar ab = this.getActivity().getActionBar();
 		ab.setTitle(name);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if (SessionManager.getInstance(this.getActivity()).isOutdated()) {
+			try {
+				initialize(bundle,
+						SessionManager.getInstance(this.getActivity())
+								.getNewDocument());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			SessionManager.getInstance(this.getActivity()).setIsDataOutdated(
+					false);
+		}
 	}
 
 	@Override
@@ -129,25 +163,26 @@ public class PatientGridOfImagesFragment extends
 			long id) {
 
 		Intent i = new Intent(this.getActivity(), FullScreenViewActivity.class);
-		i.putParcelableArrayListExtra("list",
-				super.imageUrls);
+		i.putParcelableArrayListExtra("list", super.imageUrls);
 		i.putExtra("position", position);
 		startActivity(i);
 	}
 
-
 	@Override
 	public void onTaskComplete(DocumentsResponse docResponse) {
-		if(docResponse.isValid()){
-			for(EncodedDocument doc : docResponse.getDocuments()){
+		if (docResponse.isValid()) {
+			for (EncodedDocument doc : docResponse.getDocuments()) {
 				String decode = APIManager.decode64(doc.getDocument());
-				
-				Gson gson3 = new Gson();
-				Document parsedResponse = gson3.fromJson(decode, Document.class);
 
-				String url = APIManager.downloadRawBlobUrl(this.getActivity(), parsedResponse.getBlob_id());
-			
-				super.imageUrls.add(new Patient("" , name ,"" , parsedResponse.getCategory(), url));
+				Gson gson3 = new Gson();
+				Document parsedResponse = gson3
+						.fromJson(decode, Document.class);
+
+				String url = APIManager.downloadRawBlobUrl(this.getActivity(),
+						parsedResponse.getBlob_id());
+
+				super.imageUrls.add(new Patient("", name, "", parsedResponse
+						.getCategory(), url));
 			}
 			adapter.notifyDataSetChanged();
 			adapter.notifyDataSetInvalidated();

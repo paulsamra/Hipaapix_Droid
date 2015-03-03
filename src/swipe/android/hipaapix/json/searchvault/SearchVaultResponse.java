@@ -9,7 +9,9 @@ import swipe.android.hipaapix.json.UserData;
 import com.edbert.library.network.sync.JsonResponseInterface;
 
 public class SearchVaultResponse extends TrueVaultResponse implements JsonResponseInterface{
-	
+	public SearchVaultResponse(String s ){
+		data = new Data(s);
+	}
 	Data data;
 
 	public Data getData() {
