@@ -61,8 +61,9 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 
 		ab.setTitle("Photo Details");
 
-		Bundle extras = getIntent().getExtras();
-		photo = extras.getByteArray("BitmapImage");
+	/*	Bundle extras = getIntent().getExtras();
+		photo = extras.getByteArray("BitmapImage");*/
+		photo = GlobalTransfer.byte_array;
 		bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
 		// Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
 		ImageView imagePreview = (ImageView) findViewById(R.id.image_preview);

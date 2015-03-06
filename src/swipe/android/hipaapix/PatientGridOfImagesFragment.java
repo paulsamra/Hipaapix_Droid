@@ -149,6 +149,12 @@ public class PatientGridOfImagesFragment extends
 			return true;
 		default:
 			this.getActivity().onBackPressed();
+			SessionManager.getInstance(this.getActivity()).setPatientFirstName(
+					"");
+			SessionManager.getInstance(this.getActivity()).setPatientLastName(
+					"");
+			SessionManager.getInstance(this.getActivity()).setPatientDateOfBirth(
+					"");
 			return super.onOptionsItemSelected(item);
 		}
 	}

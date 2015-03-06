@@ -117,7 +117,7 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 						String dob = patient.getString("dob");
 						imageUrls.get(position).setName(firstName + " " + lastName);
 						imageUrls.get(position).setBirthdate(dob);
-						Log.d("finish loading", "loading");
+						//Log.d("finish loading", "loading");
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

@@ -50,7 +50,7 @@ public class HipaapixApplication extends Application implements
 
 Application.ActivityLifecycleCallbacks {
 
-	public static final boolean DEVELOPER_MODE = true;
+	public static final boolean DEVELOPER_MODE = false;
 
 	// paypal stuff
 	private static final String CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_NO_NETWORK;
@@ -63,15 +63,7 @@ Application.ActivityLifecycleCallbacks {
 	public static final int REQUEST_CODE_FUTURE_PAYMENT = 2;
 	public static final int REQUEST_CODE_PROFILE_SHARING = 3;
 
-	public static PayPalConfiguration config = new PayPalConfiguration()
-			.environment(CONFIG_ENVIRONMENT)
-			.clientId(CONFIG_CLIENT_ID)
-			// The following are only used in PayPalFuturePaymentActivity.
-			.merchantName("hipaapix")
-			.merchantPrivacyPolicyUri(
-					Uri.parse("https://www.example.com/privacy"))
-			.merchantUserAgreementUri(
-					Uri.parse("https://www.example.com/legal"));
+
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	@Override
@@ -79,9 +71,7 @@ Application.ActivityLifecycleCallbacks {
 		super.onCreate();
 
 		initImageLoader(getApplicationContext());
-		registerDatabaseTables();
-		DatabaseCommandManager.createAllTables(HipaapixContentProvider
-				.getDBHelperInstance(this).getWritableDatabase());
+	
 		 startService(new Intent(this, LogoutService.class));
 		/*
 		 * SendRequestStrategyManager.register(new MessagesRequest(this));
@@ -96,11 +86,6 @@ Application.ActivityLifecycleCallbacks {
 
 	}
 
-	public static PayPalPayment generatePayObject(double price, String item,
-			String paymentIntent) {
-		return new PayPalPayment(new BigDecimal(price), "USD", item,
-				paymentIntent);
-	}
 
 	@Override
 	public void onTerminate() {
@@ -108,13 +93,7 @@ Application.ActivityLifecycleCallbacks {
 		super.onTerminate();
 	}
 
-	private void registerDatabaseTables() {
-		DatabaseCommandManager.register(new MessagesDatabaseHelper());
-		DatabaseCommandManager.register(new NeedsDetailsDatabaseHelper());
-		DatabaseCommandManager.register(new NeedsCommentsDatabaseHelper());
-		DatabaseCommandManager.register(new EventsDatabaseHelper());
-		DatabaseCommandManager.register(new GroupsDatabaseHelper());
-	}
+	
 
 	public void initImageLoader(Context context) {
 		/*

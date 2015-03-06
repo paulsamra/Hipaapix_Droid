@@ -58,7 +58,10 @@ public class LoginActivity extends HipaaActivity implements
 		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 		signUp.setText(content);
 		login = (GreyedOutButton) findViewById(R.id.parse_login_button);
+		if(HipaapixApplication.DEVELOPER_MODE)
 		login.setEnabled(true);
+		else
+			login.setEnabled(false);
 		login.setOnClickListener(new OnClickListener() {
 
 			@Override

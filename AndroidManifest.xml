@@ -17,6 +17,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
+         android:largeHeap="true"
         android:name="swipe.android.hipaapix.HipaapixApplication"
         android:allowBackup="true"
         android:icon="@drawable/hippa_pix_app_icon"

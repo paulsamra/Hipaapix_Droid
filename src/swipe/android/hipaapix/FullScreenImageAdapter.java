@@ -62,7 +62,12 @@ public class FullScreenImageAdapter extends PagerAdapter {
 		patient = (TextView) viewLayout.findViewById(R.id.patient);
 		category = (TextView) viewLayout.findViewById(R.id.category_img);
 		patient.setText(_imagePaths.get(position).getName());
-		category.setText(_imagePaths.get(position).getCategory());
+		String s = _imagePaths.get(position).getBirthdate();
+		if(s == null || s.equals("")){
+			s=SessionManager.getInstance(_activity).getPatientDOB();
+		}
+		
+		category.setText(_imagePaths.get(position).getCategory() + " - " + s);
 		DisplayImageOptions options = ((HipaapixApplication) _activity
 				.getApplication()).getDefaultOptions();
 
