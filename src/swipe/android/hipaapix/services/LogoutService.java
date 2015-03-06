@@ -20,14 +20,13 @@ import android.util.Log;
 public class LogoutService extends Service {
 	public static CountDownTimer timer;
 	public static final String TAG = LogoutService.class.getSimpleName();
-private static final int TIME_TO_LOGOUT = 1000 * 30;
+private static final int TIME_TO_LOGOUT = 1000 * 60 * 20;
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		timer = new CountDownTimer(/* 1 * 60 * 1000 */TIME_TO_LOGOUT, 1000) {
 			public void onTick(long millisUntilFinished) {
 				// Some code
-				Log.v(TAG, "Service Started");
 			}
 
 			public void onFinish() {

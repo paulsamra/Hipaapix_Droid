@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,23 +13,23 @@ import swipe.android.hipaapix.json.TrueVaultResponse;
 import swipe.android.hipaapix.json.UpdateDocumentResponse;
 import swipe.android.hipaapix.json.UploadImageResponse;
 import swipe.android.hipaapix.json.UploadPatientResponse;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
+import android.text.Html;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -51,15 +50,29 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_photo_details_layout);
 
-		getActionBar().setDisplayOptions(
-				ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-		ActionBar ab = this.getActionBar();
-		ab.setDisplayShowTitleEnabled(true);
-		ab.setDisplayHomeAsUpEnabled(true);
-		ab.setHomeButtonEnabled(true);
+		
+		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setDisplayShowHomeEnabled(false);
+		getActionBar().setDisplayShowTitleEnabled(true);
 
-		ab.setTitle("Photo Details");
+		
+		LayoutInflater mInflater = LayoutInflater.from(this);
+		View mCustomView = mInflater.inflate(R.layout.photo_details_action_bar_layout,
+				null);
+		
+		ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+
+		getActionBar().setCustomView(mCustomView, lp);
+		getActionBar().setDisplayShowCustomEnabled(true);
+		
+///
+		getActionBar().setDisplayUseLogoEnabled(false);
+
+		getActionBar().setTitle(Html.fromHtml("<font color='#DA2922'>Cancel</font>"));
+
 
 	/*	Bundle extras = getIntent().getExtras();
 		photo = extras.getByteArray("BitmapImage");*/

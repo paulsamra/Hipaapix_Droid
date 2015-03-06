@@ -257,34 +257,34 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 		new LongOperation(data).execute();
 
 	}
-	
 
-    private class LongOperation extends AsyncTask<Void, Void, byte[]> {
-      byte[] data;
-      LongOperation(byte[] data){
-    	  this.data = data;
-      }
+	private class LongOperation extends AsyncTask<Void, Void, byte[]> {
+		byte[] data;
 
-        @Override
-        protected void onPostExecute(byte[] byteArray) {
-        	myPictureCallback_JPG.onPictureTaken(byteArray, camera);
-        	dialog.cancel();
-        }
+		LongOperation(byte[] data) {
+			this.data = data;
+		}
 
-        @Override
-        protected void onPreExecute() {
-        	dialog = new ProgressDialog(HipaaPixCamera.this);
-    		dialog.setMessage("Rendering image...");
-    		dialog.show();
-        }
+		@Override
+		protected void onPostExecute(byte[] byteArray) {
+			myPictureCallback_JPG.onPictureTaken(byteArray, camera);
+			dialog.cancel();
+		}
 
-    
+		@Override
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(HipaaPixCamera.this);
+			dialog.setMessage("Rendering image...");
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.show();
+		}
+
 		@Override
 		protected byte[] doInBackground(Void... params) {
 			Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
 			int rotation = 90;
-			Log.d("RENDER", " DISALOG");		
+			Log.d("RENDER", " DISALOG");
 			if (rotation != 0) {
 				Bitmap oldBitmap = bitmap;
 
@@ -299,9 +299,16 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 			byte[] byteArray = stream.toByteArray();
-			
+
 			return byteArray;
 		}
-    }
+	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (dialog != null) {
+			dialog.cancel();
+		}
+	}
 }

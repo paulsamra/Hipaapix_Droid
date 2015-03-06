@@ -2,10 +2,12 @@ package swipe.android.hipaapix;
 
 import swipe.android.hipaapix.json.TrueVaultResponse;
 import swipe.android.hipaapix.services.LogoutService;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
@@ -53,6 +55,12 @@ public abstract class HipaaActivity extends ActionBarActivity {
 		super.onUserInteraction();
 		LogoutService.timer.cancel();
 		LogoutService.timer.start();
+	}
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 	}
 
 }

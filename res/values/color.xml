@@ -168,11 +168,10 @@
     <color name="com_parse_ui_twitter_login_button_push">#2588B5</color>
     <color name="com_parse_ui_twitter_login_button_focus">#2788BE</color>
     <color name="hipaapix_theme">#13B390</color>
-      <color name="hipaapix_theme_red">#DA2922</color>
+    <color name="hipaapix_theme_red">#DA2922</color>
     <color name="hipaapix_action_bar_background">#13B390</color>
-     <color name="hipaapix_grey">#F2F2F2</color>
+    <color name="hipaapix_grey">#F2F2F2</color>
     <color name="transparent">#800000</color>
-    
     <color name="color_preloader_start">#000000</color>
     <color name="color_preloader_center">#000000</color>
     <color name="color_preloader_end">#ff56a9c7</color>

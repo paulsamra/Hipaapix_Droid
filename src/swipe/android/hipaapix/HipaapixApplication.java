@@ -50,7 +50,7 @@ public class HipaapixApplication extends Application implements
 
 Application.ActivityLifecycleCallbacks {
 
-	public static final boolean DEVELOPER_MODE = false;
+	public static final boolean DEVELOPER_MODE = true;
 
 	// paypal stuff
 	private static final String CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_NO_NETWORK;

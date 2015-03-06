@@ -26,16 +26,21 @@ public class APIManager {
 		JSONObject first_name = new JSONObject();
 		JSONObject last_name = new JSONObject();
 		JSONObject dob = new JSONObject();
-
-		if (!first_name_field.getText().toString().equals("")) {
-			first_name.put("value", first_name_field.getText().toString());
+		String firstName=first_name_field.getText().toString();
+		String lastName = last_name_field.getText().toString();
+		if (HipaapixApplication.DEVELOPER_MODE) {
+			firstName = "Kobe";
+			lastName = "Bryant";
+		}
+		if (!first_name_field.getText().toString().equals("") || HipaapixApplication.DEVELOPER_MODE) {
+			first_name.put("value", firstName);
 			first_name.put("type", "eq");
 			first_name.put("case_sensitive", false);
 			filter.put("firstName", first_name);
 
 		}
-		if (!last_name_field.getText().toString().equals("")) {
-			last_name.put("value", last_name_field.getText().toString());
+		if (!last_name_field.getText().toString().equals("")|| HipaapixApplication.DEVELOPER_MODE) {
+			last_name.put("value", lastName);
 			last_name.put("type", "eq");
 			last_name.put("case_sensitive", false);
 			filter.put("lastName", last_name);
@@ -205,7 +210,6 @@ public class APIManager {
 		try {
 			text = new String(data, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return text;

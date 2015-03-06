@@ -8,31 +8,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.droidparts.widget.ClearableEditText;
-import org.json.JSONObject;
 
-import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.core.BaseFragment;
-import swipe.android.hipaapix.core.FragmentInfo;
-import swipe.android.hipaapix.core.GridOfSearchResultsNoTakePictureFragment;
 import swipe.android.hipaapix.core.HipaaPixTabsActivityContainer;
 import swipe.android.hipaapix.json.UploadPatientResponse;
-import swipe.android.hipaapix.json.searchvaultImage.SearchVaultImageResponse;
 import swipe.android.hipaapix.viewAdapters.ExpandableListAdapter;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -41,7 +31,6 @@ import android.widget.Switch;
 
 import com.edbert.library.containers.PositionalLinkedMap;
 import com.edbert.library.network.AsyncTaskCompleteListener;
-import com.edbert.library.network.GetDataWebTask;
 import com.edbert.library.network.PostDataWebTask;
 import com.edbert.library.utils.MapUtils;
 import com.fourmob.datetimepicker.date.DatePickerDialog;
@@ -73,6 +62,7 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 		last_name_field = (ClearableEditText) view
 				.findViewById(R.id.last_name_field);
 		calendar = Calendar.getInstance();
+
 		go.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -131,6 +121,35 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 			}
 
 		}
+
+		first_name_field
+				.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+					@Override
+					public void onFocusChange(View v, boolean hasFocus) {
+						if (!hasFocus) {
+							hideKeyboard(v);
+						}
+					}
+				});
+
+		last_name_field
+				.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+					@Override
+					public void onFocusChange(View v, boolean hasFocus) {
+						if (!hasFocus) {
+							hideKeyboard(v);
+						}
+					}
+				});
+
+		start_date.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (!hasFocus) {
+					hideKeyboard(v);
+				}
+			}
+		});
 		return view;
 	}
 
@@ -209,10 +228,11 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 		String start_date_string = FieldsParsingUtils
 				.convertDisplayStringToProper(start_date.getText().toString(),
 						"");
+		String firstName = first_name_field.getText().toString();
+		String lastName = last_name_field.getText().toString();
+		
 		String document = APIManager.createPatientDocument(this.getActivity(),
-				new LocalPatient(first_name_field.getText().toString(),
-						last_name_field.getText().toString(),
-						start_date_string, ""));
+				new LocalPatient(firstName, lastName, start_date_string, ""));
 		Map<String, String> headers = APIManager.defaultSessionHeaders();
 		Map<String, String> form = new HashMap<String, String>();
 		form.put("document", document);
@@ -229,7 +249,7 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 	}
 
 	public void doSearch() throws Exception {
-
+		
 		String encoded = APIManager.searchOptions(this.getActivity(),
 				first_name_field, last_name_field, start_date);
 
@@ -271,4 +291,11 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 			alert.show();
 		}
 	}
+
+	public void hideKeyboard(View view) {
+		InputMethodManager inputMethodManager = (InputMethodManager) this
+				.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+		inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+	}
+
 }
