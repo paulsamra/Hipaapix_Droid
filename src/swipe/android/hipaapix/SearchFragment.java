@@ -163,7 +163,7 @@ public class SearchFragment extends BaseFragment implements OnDateSetListener,
 			@Override
 			public void onClick(View v) {
 				datePickerDialog.setVibrate(false);
-				datePickerDialog.setYearRange(1985, 2028);
+				datePickerDialog.setYearRange(1903, 2028);
 				datePickerDialog.show(SearchFragment.this.getActivity()
 						.getSupportFragmentManager(), DATEPICKER_START_TAG);
 

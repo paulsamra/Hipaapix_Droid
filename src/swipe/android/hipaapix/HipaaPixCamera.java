@@ -108,10 +108,14 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 		reloadCamera();
 	}
 
-	boolean flashIsOn = false;
+	boolean flashIsOn = false, safeToTakePicture=true;
 
 	public void takePicture() {
+		if (safeToTakePicture) {
+		  
 		camera.takePicture(myShutterCallback, myPictureCallback_RAW, this);
+		  safeToTakePicture = false;
+		}
 	}
 
 	ShutterCallback myShutterCallback = new ShutterCallback() {
@@ -146,7 +150,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			 * Bundle bundle = new Bundle(); bundle.putByteArray("BitmapImage",
 			 * arg0); intent.putExtras(bundle);
 			 */
-			GlobalTransfer.byte_array = arg0;
+			//GlobalTransfer.byte_array = arg0;
 			if (dialog != null)
 				dialog.dismiss();
 			// intent.putExtra("BitmapImage", bitmapPicture);
@@ -164,6 +168,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			try {
 				camera.setPreviewDisplay(surfaceHolder);
 				camera.startPreview();
+				safeToTakePicture = true;
 				previewing = true;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -243,6 +248,7 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 			camera.setParameters(p);
 
 			camera.startPreview();
+			safeToTakePicture = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -295,12 +301,13 @@ public class HipaaPixCamera extends Activity implements SurfaceHolder.Callback,
 
 				oldBitmap.recycle();
 			}
-
+			GlobalTransfer.bitmap = bitmap;
+/*
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-			byte[] byteArray = stream.toByteArray();
+			byte[] byteArray = stream.toByteArray();*/
 
-			return byteArray;
+			return null;
 		}
 	}
 

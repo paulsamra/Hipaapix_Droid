@@ -152,7 +152,7 @@ public abstract class BaseFormAdapter extends ValidatingViewAdapter implements
 			@Override
 			public void onClick(View v) {
 				datePickerDialog.setVibrate(false);
-				datePickerDialog.setYearRange(1985, 2028);
+				datePickerDialog.setYearRange(1800, 2028);
 				datePickerDialog.show(ctx.getSupportFragmentManager(),
 						DATEPICKER_START_TAG);
 			}
@@ -190,7 +190,7 @@ public abstract class BaseFormAdapter extends ValidatingViewAdapter implements
 		@Override
 		public void onClick(View v) {
 			datePickerDialog.setVibrate(false);
-			datePickerDialog.setYearRange(1985, 2028);
+			datePickerDialog.setYearRange(1800, 2028);
 			datePickerDialog.show(ctx.getSupportFragmentManager(),
 					DATEPICKER_START_TAG);
 		}

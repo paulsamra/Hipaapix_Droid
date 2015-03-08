@@ -2,13 +2,13 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:actionMenuTextAppearance">@style/MyActionBar.MenuTextStyle</item> 
     </style>
 
     <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
         <item name="android:background">@drawable/header</item>
-        <item name="titleTextStyle">@style/MyActionBar.TitleText</item>  
+        <item name="titleTextStyle">@style/MyActionBar.TitleText</item>
         <item name="android:titleTextStyle">@style/MyActionBar.TitleText</item>
-   
     </style>
 
     <style name="MyActionBar.TitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
@@ -266,11 +266,12 @@
         <item name="android:layout_marginBottom">-5dip</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
     <style name="formFieldLabel">
         <item name="android:paddingRight">10dip</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
-     
+
     <style name="formFieldLabel">
         <item name="android:paddingRight">10dip</item>
         <item name="android:layout_height">wrap_content</item>
@@ -281,13 +282,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
     </style>
-  
-  <style name="searchFormField">
+
+    <style name="searchFormField">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
     </style>
-  
+
     <style name="formField.text">
         <item name="android:background">@drawable/login_group_row</item>
         <item name="android:singleLine">true</item>
@@ -295,6 +296,7 @@
         <item name="android:padding">5dip</item>
         <item name="android:textSize">20dip</item>
     </style>
+
     <style name="formField.multiLine">
         <item name="android:background">@drawable/login_group_row</item>
         <item name="android:singleLine">false</item>
@@ -302,6 +304,7 @@
         <item name="android:padding">5dip</item>
         <item name="android:textSize">20dip</item>
     </style>
+
     <style name="formField.text.password">
         <item name="android:background">@drawable/login_group_row</item>
         <item name="android:singleLine">true</item>
@@ -310,10 +313,9 @@
         <item name="android:padding">5dip</item>
         <item name="android:textSize">20dip</item>
     </style>
-    
-    
+
     <!-- SEARCH -->
-     <style name="searchFormField.text">
+    <style name="searchFormField.text">
         <item name="android:singleLine">true</item>
         <item name="android:maxLength">50</item>
         <item name="android:padding">5dip</item>
@@ -321,12 +323,16 @@
         <item name="android:textSize">20dip</item>
     </style>
 
-      <style name="formFieldLabel.searchFormtitle">
+    <style name="formFieldLabel.searchFormtitle">
         <item name="android:textStyle">bold</item>
         <item name="android:padding">5dip</item>
         <item name="android:textSize">20dip</item>
-        
     </style>
-    
-     
+
+    <style name="MyActionBar.MenuTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+   
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

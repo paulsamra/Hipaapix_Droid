@@ -62,6 +62,7 @@ public class LoginActivity extends HipaaActivity implements
 		login.setEnabled(true);
 		else
 			login.setEnabled(false);
+		
 		login.setOnClickListener(new OnClickListener() {
 
 			@Override

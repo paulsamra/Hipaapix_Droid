@@ -2,6 +2,7 @@ package swipe.android.hipaapix;
 
 import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,21 +11,15 @@ import java.util.TimeZone;
 
 public class FieldsParsingUtils {
 	public static long getTime(String dateString, String timeString) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-				Locale.ENGLISH);
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		String full_time_string;
+		SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd");
+		Date date;
 		try {
-			full_time_string = convertDisplayStringToProper(dateString,
-					timeString);
-
-			Date date = sdf.parse(full_time_string);
-
-			long timeInMinutesSinceEpoch = date.getTime() / (1000);
-			return timeInMinutesSinceEpoch;
-
-		} catch (Exception e) {
-
+			date = sdf.parse(dateString);
+			long timeInMillisSinceEpoch = date.getTime(); 
+			long timeInSeconds = timeInMillisSinceEpoch / ( 1000);
+			return timeInSeconds;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return -1;
@@ -47,27 +42,6 @@ public class FieldsParsingUtils {
 		return "0";
 	}
 
-	public static String parseSwitchOnlineOffline(boolean b) {
-
-		String personOnlineText = "";
-		if (b) {
-			personOnlineText = "online";
-		} else {
-			personOnlineText = "onground";
-		}
-		return personOnlineText;
-	}
-
-	public static String parseSwitchPrivatePublic(boolean b) {
-
-		String personOnlineText = "";
-		if (b) {
-			personOnlineText = "public";
-		} else {
-			personOnlineText = "private";
-		}
-		return personOnlineText;
-	}
 
 	public static String convertDisplayStringToProper(String dayTime,
 			String time) throws Exception {
@@ -96,4 +70,10 @@ public class FieldsParsingUtils {
 		}
 	}
 
+	public static String convertDisplayStringToGanz(long s) {
+Date date = new Date (1000L*s);
+SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+String formattedDate = sdf.format(date);
+return formattedDate;
+	}
 }

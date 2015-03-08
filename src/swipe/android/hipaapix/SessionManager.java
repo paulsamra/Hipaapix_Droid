@@ -264,4 +264,56 @@ return pref.getString(NEW_DOC, null);
 		editor.putString(NEW_DOC, s);
 		editor.commit();
 	}
+/*
+	public String getFirstNameFromSearch(){
+		return pref.getString(ID_first, null);
+		
+	}public String getLastNameFromSearch(){
+		return pref.getString(ID_LAST, null);
+		
+	}
+public String getPatientIDFromSearch(){
+	return pref.getString(ID_search, null);
+		
+	}public String getDOBFromSearch(){
+		return pref.getString(ID_DOB, null);
+		
+	}
+	String ID_first = "ID_FIRST";
+	String ID_LAST = "ID_Last";
+	String ID_search = "ID_search";
+	String ID_DOB = "ID_DOB";
+	public void setPatientFirstNameFromSearch(String s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(ID_first, s);
+		editor.commit();
+	}
+
+	public void setPatientLastNameFromSearch(String s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(ID_LAST, s);
+		editor.commit();
+	}
+
+	public void setPatientIDFromSearch(String s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(ID_search, s);
+		editor.commit();
+	}
+
+	public void setPatientDateOfBirthFromSearch(String s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(ID_DOB, s);
+		editor.commit();
+	}*/
+String IMAGES_CUR = "IMAGES_CUR";
+	public Set<String> getImages() {
+		return pref.getStringSet(IMAGES_CUR, null);
+		
+	}
+	public void setImages(Set<String> s) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putStringSet(IMAGES_CUR, s);
+		editor.commit();
+	}
 }

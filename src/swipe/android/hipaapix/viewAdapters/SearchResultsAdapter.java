@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import swipe.android.hipaapix.APIManager;
+import swipe.android.hipaapix.FieldsParsingUtils;
 import swipe.android.hipaapix.HipaapixApplication;
 import swipe.android.hipaapix.R;
 import swipe.android.hipaapix.SessionManager;
@@ -12,6 +13,7 @@ import swipe.android.hipaapix.classes.patients.Patient;
 import swipe.android.hipaapix.json.searchvault.EncodedDocument;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +63,12 @@ public class SearchResultsAdapter extends ArrayAdapter<EncodedDocument> {
 			JSONObject jsonPatient = new JSONObject(realPatient);
 		
 		viewHolder.name.setText(jsonPatient.getString("lastName") + ", "+jsonPatient.getString("firstName"));
-		viewHolder.birthdate.setText(jsonPatient.getString("dob"));
+		
+		String dob = jsonPatient.getString("dob");
+	
+		long reform = FieldsParsingUtils.getTime(dob);
+		String text  = FieldsParsingUtils.convertDisplayStringToGanz(reform);
+		viewHolder.birthdate.setText(text);
 		//viewHolder.category.setText(patient.getCategory());
 		viewHolder.category.setVisibility(View.GONE);
 		}catch(Exception e){

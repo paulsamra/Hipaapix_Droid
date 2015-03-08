@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import swipe.android.hipaapix.classes.patients.Patient;
@@ -115,8 +116,17 @@ public class PatientSearchListFragment extends BaseFragment implements
 		Bundle b = new Bundle();
 		EncodedDocument patient = resultsListAdapter.getItem(position);
 		String realPatient = APIManager.decode64(patient.getDocument());
-		SessionManager.getInstance(this.getActivity()).setPatientID(patient.getDocument_id());
+		Log.d("Real patient", realPatient);
+		JSONObject rPatientObj;
+		try {
+			rPatientObj = new JSONObject(realPatient);
 
+			SessionManager.getInstance(this.getActivity()).setPatientID(patient.getDocument_id());
+		
+			} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		b.putString(PatientGridOfImagesFragment.BUNDLE_TITLE_ID, realPatient);
 		mActivity.pushFragments(HipaaPixTabsActivityContainer.TAB_A,

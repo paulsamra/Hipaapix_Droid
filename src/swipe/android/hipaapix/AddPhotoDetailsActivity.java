@@ -71,13 +71,14 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 ///
 		getActionBar().setDisplayUseLogoEnabled(false);
 
-		getActionBar().setTitle(Html.fromHtml("<font color='#DA2922'>Cancel</font>"));
+		getActionBar().setTitle(Html.fromHtml("<font color='#DA2922'>Retake</font>"));
 
 
 	/*	Bundle extras = getIntent().getExtras();
 		photo = extras.getByteArray("BitmapImage");*/
-		photo = GlobalTransfer.byte_array;
-		bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+	//	photo = GlobalTransfer.byte_array;
+		//bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+		bitmap = GlobalTransfer.bitmap;
 		// Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
 		ImageView imagePreview = (ImageView) findViewById(R.id.image_preview);
 		imagePreview.setImageBitmap(bitmap);
@@ -275,12 +276,13 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 
 			String loginTitle = "Success";
 
-			String try_again = "OK";
+			String try_again = "Image Successfully Uploaded";
+			String ok = "Ok";
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(try_again)
 					.setTitle(loginTitle)
 					.setCancelable(false)
-					.setPositiveButton(try_again,
+					.setPositiveButton(ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {

@@ -2,7 +2,9 @@ package swipe.android.hipaapix;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,6 +62,7 @@ public class PatientGridOfImagesFragment extends
 
 		Bundle extras = this.getArguments();
 		bundle = extras.getString(BUNDLE_TITLE_ID);
+		setHasOptionsMenu(true);
 		try {
 			initialize(bundle, null);
 		} catch (Exception e) {
@@ -67,7 +70,6 @@ public class PatientGridOfImagesFragment extends
 			e.printStackTrace();
 		}
 
-		setHasOptionsMenu(true);
 		return v;
 	}
 
@@ -81,10 +83,29 @@ public class PatientGridOfImagesFragment extends
 		JSONObject patient = new JSONObject(s);
 		String firstName = patient.getString("firstName");
 		String lastName = patient.getString("lastName");
-		JSONArray images = patient.getJSONArray("images");
+		JSONArray images = new JSONArray();
+		
+		if (patient.has("images")) {
+				images = patient.getJSONArray("images");
+		}
+		Set<String> set = SessionManager.getInstance(this.getActivity())
+				.getImages();
+		if (set != null && set.size() > images.length()) {
+			images = new JSONArray();
+			for (String string : set) {
+				images.put(string);
+			}
+		}
+
 		if (newDocument != null)
 			images.put(newDocument);
 		String dob = patient.getString("dob");
+		Set<String> mySet = new LinkedHashSet<String>();
+		for(int i = 0 ; i < images.length(); i++){
+			mySet.add(images.getString(i));
+		}
+		SessionManager.getInstance(this.getActivity()).setImages(
+				mySet);
 		SessionManager.getInstance(this.getActivity()).setPatientFirstName(
 				firstName);
 		SessionManager.getInstance(this.getActivity()).setPatientLastName(
@@ -153,8 +174,10 @@ public class PatientGridOfImagesFragment extends
 					"");
 			SessionManager.getInstance(this.getActivity()).setPatientLastName(
 					"");
-			SessionManager.getInstance(this.getActivity()).setPatientDateOfBirth(
-					"");
+			SessionManager.getInstance(this.getActivity())
+					.setPatientDateOfBirth("");
+			SessionManager.getInstance(this.getActivity())
+			.setImages(null);
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -178,17 +201,21 @@ public class PatientGridOfImagesFragment extends
 	public void onTaskComplete(DocumentsResponse docResponse) {
 		if (docResponse.isValid()) {
 			for (EncodedDocument doc : docResponse.getDocuments()) {
-				String decode = APIManager.decode64(doc.getDocument());
+				try {
+					String decode = APIManager.decode64(doc.getDocument());
 
-				Gson gson3 = new Gson();
-				Document parsedResponse = gson3
-						.fromJson(decode, Document.class);
+					Gson gson3 = new Gson();
+					Document parsedResponse = gson3.fromJson(decode,
+							Document.class);
 
-				String url = APIManager.downloadRawBlobUrl(this.getActivity(),
-						parsedResponse.getBlob_id());
+					String url = APIManager.downloadRawBlobUrl(
+							this.getActivity(), parsedResponse.getBlob_id());
 
-				super.imageUrls.add(new Patient("", name, "", parsedResponse
-						.getCategory(), url));
+					super.imageUrls.add(new Patient("", name, "",
+							parsedResponse.getCategory(), url));
+				} catch (Exception e) {
+					return;
+				}
 			}
 			adapter.notifyDataSetChanged();
 			adapter.notifyDataSetInvalidated();

@@ -242,7 +242,8 @@ public class APIManager {
 
 			body.put("lastName", SessionManager.getInstance(ctx)
 					.getPatientLastName());
-			body.put("dob", SessionManager.getInstance(ctx).getPatientDOB());
+			body.put("dob", SessionManager.getInstance(ctx)
+					.getPatientDOB());
 
 			JSONArray documents = new JSONArray();
 
