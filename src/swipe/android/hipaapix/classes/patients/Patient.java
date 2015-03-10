@@ -78,6 +78,14 @@ public class Patient implements Parcelable {
 	}
 
 	String blob_url;
+String notes;
+	public String getNotes() {
+	return notes;
+}
+
+public void setNotes(String notes) {
+	this.notes = notes;
+}
 
 	@Override
 	public int describeContents() {
@@ -88,7 +96,7 @@ public class Patient implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringArray(new String[] { this.patient_url, this.name,
-				this.birthdate, this.category, this.blob_url,this.patient_id });
+				this.birthdate, this.category, this.blob_url,this.patient_id, this.notes });
 
 	}
 
@@ -104,7 +112,7 @@ public class Patient implements Parcelable {
 
 	public Patient(Parcel in) {
 
-		String[] data = new String[6];
+		String[] data = new String[7];
 
 		in.readStringArray(data);
 
@@ -114,5 +122,6 @@ public class Patient implements Parcelable {
 		category = data[3];
 		blob_url = data[4];
 		patient_id = data[5];
+		notes = data[6];
 	}
 }

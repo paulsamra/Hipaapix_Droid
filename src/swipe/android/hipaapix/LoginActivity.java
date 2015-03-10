@@ -139,7 +139,7 @@ public class LoginActivity extends HipaaActivity implements
 			Map<String, String> headers = APIManager.defaultSessionHeaders();
 
 			new GetDataWebTask<GetUserDataResponse>(this,
-					GetUserDataResponse.class).execute(url,
+					GetUserDataResponse.class, false).execute(url,
 					MapUtils.mapToString(headers));
 		}
 	}
@@ -206,12 +206,16 @@ public class LoginActivity extends HipaaActivity implements
 			formHeaders.put("username", usernameET.getText().toString());
 			formHeaders.put("password", passwordET.getText().toString());
 		}
+
+		pd.setMessage("Loading...");
+		pd.setCancelable(false);
+		pd.setIndeterminate(true);
+		pd.show();
 		new PostDataWebTask<LoginResponse>(this, this, LoginResponse.class,
-				true, true).execute(APIManager.getLoginURL(), "",
+				false, true).execute(APIManager.getLoginURL(), "",
 				MapUtils.mapToString(formHeaders));
 
 	}
-
 	private void enableDisableLoginButton() {
 
 		if (usernameET.getText().toString().length() > 0

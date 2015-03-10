@@ -5,6 +5,7 @@ import swipe.android.hipaapix.services.LogoutService;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,10 @@ public abstract class HipaaActivity extends ActionBarActivity {
 
 	public void displayError(TrueVaultResponse response) {
 
+		
+		if(pd != null && pd.isShowing()){
+			pd.cancel();
+		}
 		String loginTitle = "Error";
 
 		String try_again = this.getString(R.string.try_again);
@@ -56,11 +61,23 @@ public abstract class HipaaActivity extends ActionBarActivity {
 		LogoutService.timer.cancel();
 		LogoutService.timer.start();
 	}
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState){
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		pd = new ProgressDialog(this);
+	
 	}
 
+	protected ProgressDialog pd;
+
+	@Override
+	protected void onDestroy() {
+		if (pd != null) {
+			pd.dismiss();
+		}
+		super.onDestroy();
+	}
 }

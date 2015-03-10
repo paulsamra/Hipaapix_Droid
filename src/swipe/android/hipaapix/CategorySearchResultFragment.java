@@ -90,7 +90,6 @@ public class CategorySearchResultFragment extends
 
 		for (EncodedDocument doc : result.getData().getDocuments()) {
 			String decode = APIManager.decode64(doc.getDocument());
-
 			Gson gson3 = new Gson();
 			Document parsedResponse = gson3.fromJson(decode, Document.class);
 

@@ -187,9 +187,12 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 			bitmap.compress(Bitmap.CompressFormat.JPEG, compression, fOut);
 			fOut.close();
 			fOut.flush();
-
+			pd.setMessage("Loading...");
+			pd.setCancelable(false);
+			pd.setIndeterminate(true);
+			pd.show();
 			new PostDataWebTask<UploadImageResponse>(this,
-					UploadImageResponse.class, tempFile, true).execute(url,
+					UploadImageResponse.class, tempFile, false).execute(url,
 					MapUtils.mapToString(params), null);
 		}
 
@@ -234,7 +237,7 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 
 		new PostDataWebTask<UploadPatientResponse>(
 				(AsyncTaskCompleteListener) this, this,
-				UploadPatientResponse.class, true, true).execute(url,
+				UploadPatientResponse.class, false, true).execute(url,
 				MapUtils.mapToString(headers), MapUtils.mapToString(form));
 	}
 
@@ -248,7 +251,7 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 		SessionManager.getInstance(this).setNewDoucment(documentID);
 		form.put("document", document);
 		new PutDataWebTask<UpdateDocumentResponse>(this, this,
-				UpdateDocumentResponse.class,true, true).execute(url,
+				UpdateDocumentResponse.class,false, true).execute(url,
 				MapUtils.mapToString(headers), MapUtils.mapToString(form));
 	}
 
@@ -258,6 +261,9 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 			displayNetworkError();
 			blobID = null;
 			thumbnailID = null;
+			if(pd != null && pd.isShowing()){
+				pd.cancel();
+			}
 			return;
 		}
 		TrueVaultResponse tvResult = (TrueVaultResponse) result;
@@ -273,7 +279,9 @@ public class AddPhotoDetailsActivity extends HipaaActivity implements
 		} else if (result instanceof UploadPatientResponse) {
 			postPatientResponse((UploadPatientResponse) result);
 		} else {
-
+if(pd != null && pd.isShowing()){
+	pd.cancel();
+}
 			String loginTitle = "Success";
 
 			String try_again = "Image Successfully Uploaded";

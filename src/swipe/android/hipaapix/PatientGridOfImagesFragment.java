@@ -211,8 +211,10 @@ public class PatientGridOfImagesFragment extends
 					String url = APIManager.downloadRawBlobUrl(
 							this.getActivity(), parsedResponse.getBlob_id());
 
-					super.imageUrls.add(new Patient("", name, "",
-							parsedResponse.getCategory(), url));
+					Patient p = new Patient("", name, "",
+							parsedResponse.getCategory(), url);
+					p.setNotes(parsedResponse.getNotes());
+					super.imageUrls.add(p);
 				} catch (Exception e) {
 					return;
 				}

@@ -110,6 +110,7 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 						@Override
 						public void onResponse(String response) {
 					String decoded = APIManager.decode64(response);
+					Log.d("Inside of adapter", decoded);
 					try {
 						JSONObject patient = new JSONObject(decoded);
 						String firstName = patient.getString("firstName");
@@ -117,6 +118,11 @@ public class ImageAdapterNoTakePicture extends BaseAdapter {
 						String dob = patient.getString("dob");
 						imageUrls.get(position).setName(firstName + " " + lastName);
 						imageUrls.get(position).setBirthdate(dob);
+						String notes = "";
+						if(patient.has("notes")){
+					notes = patient.getString("notes");
+						}
+						imageUrls.get(position).setNotes(notes);
 						//Log.d("finish loading", "loading");
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import swipe.android.hipaapix.classes.patients.Patient;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,13 +64,17 @@ public class FullScreenImageAdapter extends PagerAdapter {
 		btnClose = (Button) viewLayout.findViewById(R.id.btnClose);
 		patient = (TextView) viewLayout.findViewById(R.id.patient);
 		category = (TextView) viewLayout.findViewById(R.id.category_img);
+		TextView notes = (TextView) viewLayout.findViewById(R.id.notes);
 		patient.setText(_imagePaths.get(position).getName());
 		String s = _imagePaths.get(position).getBirthdate();
-		if(s == null || s.equals("")){
-			s=SessionManager.getInstance(_activity).getPatientDOB();
-			
-		}
+		if (s == null || s.equals("")) {
+			s = SessionManager.getInstance(_activity).getPatientDOB();
 
+		}
+String notesString = _imagePaths.get(position).getNotes();
+if(s != null && !s.equals("")){
+	notes.setText(notesString);
+}
 		long reform = FieldsParsingUtils.getTime(s);
 		s = FieldsParsingUtils.convertDisplayStringToGanz(reform);
 		category.setText(_imagePaths.get(position).getCategory() + " - " + s);
@@ -78,12 +85,10 @@ public class FullScreenImageAdapter extends PagerAdapter {
 		// ImageLoader.getInstance().getMemoryCache());
 		// Begin ImageLoader On Cache
 		String URL2 = _imagePaths.get(position).getBlob_url();
-		
 
 		List<String> memCache = MemoryCacheUtils.findCacheKeysForImageUri(URL2,
 				ImageLoader.getInstance().getMemoryCache());
 		boolean cacheFound = !memCache.isEmpty();
-
 
 		/*
 		 * Toast.makeText(this._activity, "memCache:" + cacheFound,
@@ -106,10 +111,19 @@ public class FullScreenImageAdapter extends PagerAdapter {
 			}
 		});
 
+		rlMain = (RelativeLayout) viewLayout.findViewById(R.id.full_screen_ll);
+		imageHeader = (RelativeLayout) viewLayout.findViewById(R.id.image_header);
+	
+
 		((ViewPager) container).addView(viewLayout);
 
 		return viewLayout;
 	}
+
+	RelativeLayout imageHeader;
+	RelativeLayout rlMain;
+	boolean toggle = false;
+	
 
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object) {

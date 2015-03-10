@@ -26,5 +26,13 @@ public class Document
 		this.blob_id = blob_id;
 	}
 
-	String category, patient_id, blob_id;
+	String category, patient_id, blob_id, notes;
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 }
